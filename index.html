@@ -27,13 +27,25 @@
         .card:hover { border-color: rgba(0,255,195,0.3); box-shadow: 0 10px 40px rgba(0,255,195,0.1); }
         .title { color: #00ffc3; margin-top: 0; margin-bottom: 15px; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* BUTTONS & INPUTS */
+        /* AUTH TABS & INPUTS */
+        .tabs { display: flex; border-bottom: 1px solid rgba(0,255,195,0.2); margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.3s; }
+        .tab-btn.active { color: #00ffc3; border-bottom: 2px solid #00ffc3; }
+        .form-auth { display: none; }
+        .form-auth.active { display: block; animation: fadeUp 0.3s; }
+        
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group input { margin-bottom: 0; padding-right: 40px; }
+        .eye { position: absolute; right: 15px; top: 14px; cursor: pointer; font-size: 18px; user-select: none; opacity: 0.8; transition: 0.2s;}
+        .eye:hover { opacity: 1; transform: scale(1.1); }
+
+        input { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-size: 15px; transition: 0.2s; }
+        input:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 3px rgba(0,255,195,0.1); }
+
+        /* BUTTONS */
         .btn { background: #00ffc3; color: #000; border: none; padding: 14px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; font-size: 15px; }
         .btn:hover:not(:disabled) { box-shadow: 0 0 15px rgba(0,255,195,0.4); transform: translateY(-2px); }
         .btn:disabled { opacity: 0.6; cursor: wait; transform: none; box-shadow: none; }
-        
-        input { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-size: 15px; transition: 0.2s; }
-        input:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 3px rgba(0,255,195,0.1); }
 
         /* PRODUCT GRID */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
@@ -100,13 +112,36 @@
         </div>
 
         <div id="v-auth" class="view">
-            <div class="card" style="max-width:420px; margin:auto;">
+            <div class="card" style="max-width:420px; margin:auto; padding-top:20px;">
                 <h2 style="text-align:center; color:#00ffc3; margin-top:0;">TÀI KHOẢN</h2>
-                <input id="u" placeholder="Tên tài khoản (Viết liền không dấu)">
-                <input id="p" type="password" placeholder="Mật khẩu bảo mật">
                 
-                <button class="btn" id="btnAuthLogin" onclick="doAuth('login')">Đăng Nhập</button>
-                <button class="btn" id="btnAuthReg" style="background:transparent; color:#00ffc3; border:2px solid #00ffc3; margin-top:15px;" onclick="doAuth('register')">Đăng Ký Mới</button>
+                <div class="tabs">
+                    <button class="tab-btn active" id="tabLogin" onclick="setTab('login')">Đăng nhập</button>
+                    <button class="tab-btn" id="tabReg" onclick="setTab('register')">Đăng ký mới</button>
+                </div>
+
+                <div id="form-login" class="form-auth active">
+                    <input id="lUser" placeholder="Tên tài khoản (Viết liền không dấu)">
+                    <div class="input-group">
+                        <input id="lPass" type="password" placeholder="Mật khẩu bảo mật">
+                        <span class="eye" onclick="togPass('lPass')">👁️</span>
+                    </div>
+                    <button class="btn" id="btnLogin" onclick="doLogin()">Đăng Nhập</button>
+                </div>
+
+                <div id="form-register" class="form-auth">
+                    <input id="rUser" placeholder="Tên tài khoản mới (Không dấu)">
+                    <div class="input-group">
+                        <input id="rPass" type="password" placeholder="Mật khẩu (Từ 8 ký tự)">
+                        <span class="eye" onclick="togPass('rPass')">👁️</span>
+                    </div>
+                    <div class="input-group">
+                        <input id="rConf" type="password" placeholder="Xác nhận lại mật khẩu">
+                        <span class="eye" onclick="togPass('rConf')">👁️</span>
+                    </div>
+                    <button class="btn" id="btnReg" style="background:transparent; color:#00ffc3; border:2px solid #00ffc3;" onclick="doReg()">Tạo Tài Khoản</button>
+                </div>
+
             </div>
         </div>
 
@@ -172,7 +207,7 @@
     </div>
 
     <script>
-        // LINK API CỦA BẠN (Giữ nguyên)
+        // LINK API CỦA BẠN ĐÃ ĐƯỢC CHÈN SẴN
         const API = "https://script.google.com/macros/s/AKfycbxvSkK0slmP5VcE62d1R5lgB9npW6Y7WlGls0lvqmQINMlp4yLLTrUaSxhkfj2XLcYg8w/exec";
 
         let user = localStorage.getItem("shop_u") || "";
@@ -180,7 +215,7 @@
         let bal = 0;
 
         // Auto login khi mở web
-        window.onload = () => { if(user && pass) doAuth('login', true); };
+        window.onload = () => { if(user && pass) doLogin(true); };
 
         // Điều hướng các trang
         function v(id) {
@@ -194,7 +229,26 @@
             }
         }
 
-        // Cập nhật UI sau khi đăng nhập
+        // Chuyển Tab Đăng nhập / Đăng ký
+        function setTab(t) {
+            document.querySelectorAll('.form-auth').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+            if(t === 'login') {
+                document.getElementById('form-login').classList.add('active');
+                document.getElementById('tabLogin').classList.add('active');
+            } else {
+                document.getElementById('form-register').classList.add('active');
+                document.getElementById('tabReg').classList.add('active');
+            }
+        }
+
+        // Tắt mở Mắt xem Mật khẩu
+        function togPass(id) {
+            let x = document.getElementById(id);
+            x.type = x.type === "password" ? "text" : "password";
+        }
+
+        // Cập nhật UI
         function setUI(u, b) {
             document.getElementById("nav-auth").style.display = "none";
             document.getElementById("nav-user").style.display = "flex";
@@ -209,48 +263,76 @@
             document.getElementById("priceTotal").innerText = Math.round(p).toLocaleString() + " ₫";
         }
 
-        // Xử lý Auth (Đăng nhập / Đăng ký)
-        async function doAuth(act, silent = false) {
-            let u = silent ? user : document.getElementById("u").value.trim();
-            let p = silent ? pass : document.getElementById("p").value;
+        // Xử lý Đăng Nhập
+        async function doLogin(silent = false) {
+            let u = silent ? user : document.getElementById("lUser").value.trim();
+            let p = silent ? pass : document.getElementById("lPass").value;
 
             if (!u || !p) return alert("Vui lòng nhập đầy đủ Tài khoản và Mật khẩu!");
 
-            let btnLogin = document.getElementById("btnAuthLogin");
-            let btnReg = document.getElementById("btnAuthReg");
-
+            let btnLogin = document.getElementById("btnLogin");
             if (!silent) {
-                btnLogin.disabled = true; btnReg.disabled = true;
+                btnLogin.disabled = true;
                 btnLogin.innerText = "⏳ Đang kết nối...";
             }
 
             try {
-                let res = await fetch(`${API}?action=${act}&user=${u}&pass=${p}`);
+                let res = await fetch(`${API}?action=login&user=${u}&pass=${p}`);
                 let d = await res.json();
 
                 if (d.status === "success") {
-                    if (act === "login") {
-                        user = u; pass = p; bal = d.balance;
-                        localStorage.setItem("shop_u", u);
-                        localStorage.setItem("shop_p", p);
-                        setUI(user, bal);
-                        if (!silent) v("home");
-                    } else {
-                        alert("✅ Đăng ký thành công! Hệ thống sẽ tự động đăng nhập.");
-                        doAuth('login'); // Tự login sau khi reg
-                    }
+                    user = u; pass = p; bal = d.balance;
+                    localStorage.setItem("shop_u", u);
+                    localStorage.setItem("shop_p", p);
+                    setUI(user, bal);
+                    if (!silent) v("home");
                 } else {
                     if (!silent) alert("❌ Lỗi: " + d.message);
-                    else logout(); // Pass sai khi auto login -> Xóa local
+                    else logout();
                 }
             } catch (e) {
-                if (!silent) alert("❌ Lỗi kết nối đến máy chủ. Vui lòng thử lại!");
+                if (!silent) alert("❌ Lỗi kết nối đến máy chủ.");
             }
 
             if (!silent) {
-                btnLogin.disabled = false; btnReg.disabled = false;
+                btnLogin.disabled = false;
                 btnLogin.innerText = "Đăng Nhập";
             }
+        }
+
+        // Xử lý Đăng Ký
+        async function doReg() {
+            let u = document.getElementById("rUser").value.trim();
+            let p = document.getElementById("rPass").value;
+            let c = document.getElementById("rConf").value;
+
+            if (!u || !p || !c) return alert("Vui lòng nhập đầy đủ thông tin!");
+            if (p !== c) return alert("❌ Mật khẩu xác nhận không khớp!");
+            if (p.length < 8) return alert("❌ Mật khẩu phải từ 8 ký tự trở lên!");
+
+            let btnReg = document.getElementById("btnReg");
+            btnReg.disabled = true;
+            btnReg.innerText = "⏳ Đang tạo tài khoản...";
+
+            try {
+                let res = await fetch(`${API}?action=register&user=${u}&pass=${p}`);
+                let d = await res.json();
+
+                if (d.status === "success") {
+                    alert("✅ Đăng ký thành công! Hệ thống sẽ tự động đăng nhập.");
+                    // Đổ dữ liệu sang form login và tự chạy login
+                    document.getElementById("lUser").value = u;
+                    document.getElementById("lPass").value = p;
+                    doLogin();
+                } else {
+                    alert("❌ Lỗi: " + d.message);
+                }
+            } catch (e) {
+                alert("❌ Lỗi kết nối đến máy chủ.");
+            }
+
+            btnReg.disabled = false;
+            btnReg.innerText = "Tạo Tài Khoản";
         }
 
         // Xử lý Mua Key
@@ -307,49 +389,4 @@
                             <tr>
                                 <td style="font-family:monospace; color:#38bdf8; font-size:15px; font-weight:bold;">${k.key}</td>
                                 <td style="color:#cbd5e1;">${new Date(k.expire).toLocaleDateString('vi-VN')}</td>
-                                <td><span class="badge" style="${statusStyle}">${k.status}</span></td>
-                                <td><button class="copy-btn" onclick="copyText('${k.key}')">📋 Copy</button></td>
-                            </tr>`;
-                        });
-                    }
-                    document.getElementById("histBody").innerHTML = h;
-                }
-            } catch(e) {}
-            
-            document.getElementById("histLoad").style.display = "none";
-        }
-
-        // Xử lý Cập nhật tiền
-        async function refreshBal() {
-            let btnRef = document.getElementById("btnRef");
-            btnRef.disabled = true;
-            btnRef.innerText = "⏳ Đang kiểm tra...";
-
-            try {
-                let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
-                let d = await res.json();
-                if (d.status === "success") {
-                    bal = d.balance;
-                    setUI(user, bal);
-                    alert("✅ Cập nhật số dư thành công!");
-                }
-            } catch(e) { alert("❌ Lỗi kết nối!"); }
-
-            btnRef.disabled = false;
-            btnRef.innerText = "🔄 Đã chuyển khoản? Bấm cập nhật số dư";
-        }
-
-        // Tiện ích Copy
-        function copyText(text) {
-            navigator.clipboard.writeText(text);
-            alert("✅ Đã copy Key vào bộ nhớ tạm: " + text);
-        }
-
-        // Đăng xuất
-        function logout() {
-            localStorage.clear();
-            location.reload();
-        }
-    </script>
-</body>
-</html>
+                                <td><span class="badge" style
