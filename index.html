@@ -26,21 +26,19 @@
         .user-info-box .u-bal { font-size: 16px; color: #ecfdf5; font-weight: 500; background: rgba(0,0,0,0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; margin-top: 5px; }
 
         /* View Sections */
-        .view-section { display: none; padding: 10px; }
+        .view-section { display: none; padding: 10px; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Product Cards */
         .product-grid { display: grid; gap: 20px; padding: 10px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .product-img { height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 40px; }
-        .product-info { padding: 15px; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .price { color: #ea580c; font-size: 22px; font-weight: bold; border-bottom: 2px solid #ea580c; }
-        .btn-buy { width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-buy:disabled { background: #64748b; cursor: not-allowed; }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.05); border: 1px solid #eee; max-width: 400px; margin: auto; }
+        .product-img { height: 180px; background: #0b1120; display: flex; align-items: center; justify-content: center; font-size: 60px; color: #10b981; }
+        .product-info { padding: 20px; text-align: center; }
+        .btn-buy { width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; margin-top: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
 
-        /* Auth Box */
-        .auth-container { background: white; padding: 25px; border-radius: 12px; max-width: 400px; margin: 20px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        /* Auth Box & Purchase Box */
+        .auth-container, .purchase-box { background: white; padding: 25px; border-radius: 12px; max-width: 400px; margin: 20px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid #eee; }
         .tab-btn { flex: 1; padding: 12px; background: none; border: none; font-weight: bold; color: #888; cursor: pointer; font-size: 16px; }
         .tab-btn.active { color: #1877f2; border-bottom: 2px solid #1877f2; }
@@ -49,9 +47,14 @@
         .form-auth.active { display: block !important; } 
         
         .input-group { position: relative; margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; outline: none; }
-        input:focus { border-color: #1877f2; }
-        .eye { position: absolute; right: 12px; top: 12px; cursor: pointer; font-size: 20px; }
+        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 18px; outline: none; text-align: center; }
+        input:focus { border-color: #1877f2; box-shadow: 0 0 5px rgba(24,119,242,0.2); }
+        .eye { position: absolute; right: 15px; top: 14px; cursor: pointer; font-size: 20px; }
+
+        /* Máy tính tiền */
+        .calc-box { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; color: #475569; }
+        .calc-total { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #cbd5e1; font-size: 18px; font-weight: bold; color: #ea580c; }
 
         /* Deposit */
         .deposit-box { background: #fff3cd; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #ffeeba; }
@@ -90,31 +93,44 @@
 
     <div id="view-home" class="view-section active">
         <div style="text-align:center; color:#ea580c; font-weight:bold; margin:10px 0; font-size:13px;">THE BIGGEST RANGE OF AUTOMATION TOOLS!</div>
+        
         <div class="product-grid">
             <div class="product-card">
-                <div class="product-img">📦</div>
+                <div class="product-img">💻</div>
                 <div class="product-info">
-                    <div style="color:#94a3b8; font-size:12px;">CATEGORY</div>
-                    <h3 style="margin:5px 0;">Gói VIP 1 Ngày</h3>
-                    <div class="price-row">
-                        <span style="color:#94a3b8; text-decoration:line-through;">20.000đ</span>
-                        <span class="price">10.000đ</span>
+                    <div style="color:#94a3b8; font-size:13px; font-weight:bold; letter-spacing:1px;">AUTO SCRIPT</div>
+                    <h3 style="margin:8px 0; font-size: 22px; color: #0f172a;">Tool Golike.py</h3>
+                    <p style="color: #64748b; font-size: 14px; line-height: 1.5;">Phần mềm tự động hóa tương tác siêu tốc. Trải nghiệm ngay chỉ với <b>1.000đ/ngày</b>.</p>
+                    
+                    <div style="background: #ecfdf5; padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 13px; color: #059669; border: 1px dashed #10b981; text-align: left; font-weight: 500;">
+                        🔥 Mua >7 ngày: Giảm 15%<br>
+                        🔥 Mua >20 ngày: Giảm 20%<br>
+                        🔥 Mua >30 ngày: Giảm 25%
                     </div>
-                    <button class="btn-buy" id="btnBuy1" onclick="buy(1, 'btnBuy1')">🛒 Mua Ngay</button>
+
+                    <button class="btn-buy" onclick="switchView('purchase')">🛒 Tạo Key Ngay</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">🚀</div>
-                <div class="product-info">
-                    <div style="color:#94a3b8; font-size:12px;">CATEGORY</div>
-                    <h3 style="margin:5px 0;">Gói VIP 7 Ngày</h3>
-                    <div class="price-row">
-                        <span style="color:#94a3b8; text-decoration:line-through;">100.000đ</span>
-                        <span class="price">70.000đ</span>
-                    </div>
-                    <button class="btn-buy" id="btnBuy7" onclick="buy(7, 'btnBuy7')">🛒 Mua Ngay</button>
-                </div>
+        </div>
+    </div>
+
+    <div id="view-purchase" class="view-section">
+        <div class="purchase-box">
+            <h2 style="color: #1877f2; margin-top: 0; text-align: center;">Tool Golike.py</h2>
+            <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 20px;">Nhập số ngày bạn muốn mua. Khuyến mãi sẽ được tự động áp dụng!</p>
+
+            <div class="input-group">
+                <input type="number" id="buyDays" placeholder="Ví dụ: 10" oninput="calcPrice()">
             </div>
+
+            <div class="calc-box">
+                <div class="calc-row"><span>Tạm tính (1k/ngày):</span><strong id="basePrice">0đ</strong></div>
+                <div class="calc-row"><span>Giảm giá ưu đãi:</span><strong id="discountStr" style="color:#10b981">0%</strong></div>
+                <div class="calc-total"><span>Tổng thanh toán:</span><strong id="finalPrice">0đ</strong></div>
+            </div>
+
+            <button class="btn-auth-menu" id="btnConfirmBuy" style="width: 100%; margin: 15px 0 10px 0; background: #0f172a;" onclick="confirmBuy()">💳 Xác Nhận Thanh Toán</button>
+            <button class="btn-auth-menu" style="width: 100%; margin: 0; background: #94a3b8;" onclick="switchView('home')">🔙 Quay lại</button>
         </div>
     </div>
 
@@ -127,9 +143,7 @@
             </div>
 
             <div id="form-login" class="form-auth active">
-                <div class="input-group">
-                    <input type="text" id="lUser" placeholder="Tên tài khoản">
-                </div>
+                <div class="input-group"><input type="text" id="lUser" placeholder="Tên tài khoản"></div>
                 <div class="input-group">
                     <input type="password" id="lPass" placeholder="Mật khẩu">
                     <span class="eye" onclick="togPass('lPass')">👁️</span>
@@ -138,9 +152,7 @@
             </div>
 
             <div id="form-register" class="form-auth">
-                <div class="input-group">
-                    <input type="text" id="rUser" placeholder="Tên tài khoản mới">
-                </div>
+                <div class="input-group"><input type="text" id="rUser" placeholder="Tên tài khoản mới"></div>
                 <div class="input-group">
                     <input type="password" id="rPass" placeholder="Mật khẩu (8+ ký tự, chữ & số)">
                     <span class="eye" onclick="togPass('rPass')">👁️</span>
@@ -168,10 +180,10 @@
 
     <script>
         // ⚠️ THAY LINK /EXEC CỦA BẠN VÀO ĐÂY
-        const API = "https://script.google.com/macros/s/AKfycbztVoSZdJRjLZfc5oA0VVGKWgv1ZI_scqQerpCe8t6VOiKkAVYALz-jCwKlg18n71r-Bw/exec";
+        const API = "LINK_API_CUA_BAN_O_DAY";
         
         let user = "", pass = "", bal = 0;
-        let isBusy = false; // Biến khóa toàn cục chống Spam Click
+        let isBusy = false; 
 
         window.onload = function() {
             let savedUser = localStorage.getItem("xw_user");
@@ -213,7 +225,6 @@
         function togPass(id) { let x = document.getElementById(id); x.type = x.type === "password" ? "text" : "password"; }
         function fixBal(b) { let n = parseInt(b); return isNaN(n) ? 0 : n; }
 
-        // HÀM XỬ LÝ NÚT BẤM (Hiệu ứng Loading + Chống Spam)
         function setBtnLoading(btnId, isLoading, loadingText = "⏳ Đang xử lý...") {
             let btn = document.getElementById(btnId);
             if(!btn) return;
@@ -222,11 +233,10 @@
                 btn.dataset.originalText = btn.innerText;
                 btn.innerText = loadingText;
             } else {
-                // Thêm thời gian delay 1.5 giây sau khi xong mới cho bấm tiếp
                 setTimeout(() => {
                     btn.disabled = false;
                     btn.innerText = btn.dataset.originalText;
-                    isBusy = false; // Mở khóa hệ thống
+                    isBusy = false; 
                 }, 1500); 
             }
         }
@@ -239,20 +249,65 @@
             document.getElementById('logoutLi').style.display = 'block'; 
         }
 
-        async function doLogin(isSilent = false) {
-            if(isBusy && !isSilent) return; // Đang bận thì không làm gì cả
-            
-            let u = document.getElementById('lUser').value.trim();
-            let p = document.getElementById('lPass').value;
-            if(!u || !p) {
-                if(!isSilent) alert("Nhập đủ thông tin!");
+        // TÍNH TOÁN TIỀN REAL-TIME
+        function calcPrice() {
+            let days = parseInt(document.getElementById('buyDays').value);
+            if(isNaN(days) || days <= 0) {
+                document.getElementById('basePrice').innerText = '0đ';
+                document.getElementById('discountStr').innerText = '0%';
+                document.getElementById('finalPrice').innerText = '0đ';
                 return;
             }
             
+            let base = days * 1000;
+            let discount = 0;
+            
+            if (days > 30) discount = 25;
+            else if (days > 20) discount = 20;
+            else if (days > 7) discount = 15;
+
+            let final = base * (1 - discount/100);
+
+            document.getElementById('basePrice').innerText = base.toLocaleString() + 'đ';
+            document.getElementById('discountStr').innerText = discount + '%';
+            document.getElementById('finalPrice').innerText = final.toLocaleString() + 'đ';
+        }
+
+        // MUA HÀNG
+        async function confirmBuy() {
+            let days = parseInt(document.getElementById('buyDays').value);
+            if(isNaN(days) || days <= 0) return alert("Vui lòng nhập số ngày hợp lệ!");
+            if(!user) { alert("Bạn cần đăng nhập trước!"); return goAuth(); }
+            if(isBusy) return;
+            
+            let finalStr = document.getElementById('finalPrice').innerText;
+            if(!confirm(`Thanh toán ${finalStr} để mua Key Tool ${days} ngày?`)) return;
+            
+            isBusy = true; setBtnLoading('btnConfirmBuy', true, "⏳ Đang kết nối máy chủ...");
+            
+            try {
+                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${days}`);
+                let d = await res.json();
+                if(d.status === 'success') {
+                    bal = fixBal(d.new_balance);
+                    updateUI(user, bal);
+                    prompt("✅ Giao dịch thành công! Copy mã Key của bạn ở ô bên dưới:", d.key);
+                    switchView('home');
+                } else alert("❌ Lỗi: " + d.message);
+            } catch(e) { alert("Lỗi giao dịch, vui lòng thử lại!"); }
+            
+            setBtnLoading('btnConfirmBuy', false);
+        }
+
+        async function doLogin(isSilent = false) {
+            if(isBusy && !isSilent) return; 
+            let u = document.getElementById('lUser').value.trim();
+            let p = document.getElementById('lPass').value;
+            if(!u || !p) { if(!isSilent) alert("Nhập đủ thông tin!"); return; }
             if(!isSilent) { isBusy = true; setBtnLoading('btnLogin', true, "⏳ Đang đăng nhập..."); }
             
             try {
-                let res = await fetch(`${API}?action=login&user=${u}&pass=${p}`);
+                let res = await fetch(`${API}?action=login&user=${u}&pass=${pass}`);
                 let d = await res.json();
                 if(d.status === 'success') {
                     user = u; pass = p; bal = fixBal(d.balance);
@@ -263,10 +318,7 @@
                     if(!isSilent) alert(d.message);
                     else { localStorage.removeItem("xw_user"); localStorage.removeItem("xw_pass"); }
                 }
-            } catch(e) { 
-                if(!isSilent) alert("Lỗi kết nối máy chủ!"); 
-            }
-            
+            } catch(e) { if(!isSilent) alert("Lỗi kết nối máy chủ!"); }
             if(!isSilent) setBtnLoading('btnLogin', false);
         }
 
@@ -277,7 +329,6 @@
             let c = document.getElementById('rConf').value;
             if(p.length < 8 || !/[0-9]/.test(p) || !/[a-zA-Z]/.test(p)) return alert("Mật khẩu cần 8+ ký tự, gồm cả chữ và số!");
             if(p !== c) return alert("Mật khẩu xác nhận không khớp!");
-            
             isBusy = true; setBtnLoading('btnReg', true, "⏳ Đang tạo tài khoản...");
             
             try {
@@ -289,7 +340,6 @@
                     document.getElementById('lUser').value = u; document.getElementById('lPass').value = p;
                 } else alert(d.message);
             } catch(e) { alert("Lỗi kết nối máy chủ!"); }
-            
             setBtnLoading('btnReg', false);
         }
 
@@ -301,41 +351,17 @@
             switchView('deposit');
         }
 
-        async function buy(days, btnId) {
-            if(!user) { alert("Hãy đăng nhập!"); return goAuth(); }
-            if(isBusy) return;
-            
-            if(!confirm(`Mua gói VIP ${days} ngày với giá ${days*10}.000đ?`)) return;
-            
-            isBusy = true; setBtnLoading(btnId, true, "⏳ Đang xử lý...");
-            
-            try {
-                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${days}`);
-                let d = await res.json();
-                if(d.status === 'success') {
-                    bal = fixBal(d.new_balance);
-                    updateUI(user, bal);
-                    prompt("✅ Mua thành công! Copy mã Key của bạn:", d.key);
-                } else alert("❌ Lỗi: " + d.message);
-            } catch(e) { alert("Lỗi giao dịch!"); }
-            
-            setBtnLoading(btnId, false);
-        }
-
         async function refresh() {
             if(!user || isBusy) return;
             isBusy = true; setBtnLoading('btnRefresh', true, "⏳ Đang tải...");
-            
             try {
                 let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
                 let d = await res.json();
                 if(d.status === 'success') {
-                    bal = fixBal(d.balance);
-                    updateUI(user, bal);
+                    bal = fixBal(d.balance); updateUI(user, bal);
                     alert("✅ Đã cập nhật số dư mới nhất!");
                 }
             } catch(e) { alert("Lỗi kết nối!"); }
-            
             setBtnLoading('btnRefresh', false);
         }
         
@@ -347,6 +373,19 @@
                 location.reload(); 
             }
         }
+    </script>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; } 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) { return false; } 
+        }
+        setInterval(function() { (function() { return false; }['constructor']('debugger')()); }, 50);
     </script>
 </body>
 </html>
