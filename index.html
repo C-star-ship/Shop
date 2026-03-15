@@ -1,391 +1,125 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XWorld Shop</title>
     <style>
-        body { font-family: sans-serif; background: #f4f5f9; margin: 0; padding: 0; overflow-x: hidden; }
+        body { margin: 0; font-family: sans-serif; background: #0b0f19; color: #e2e8f0; }
         * { box-sizing: border-box; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 20px; font-weight: bold; color: #1877f2; text-decoration: none; }
-        .hamburger { font-size: 24px; cursor: pointer; border: none; background: none; }
-
-        /* Sidebar */
-        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #0b1120; color: white; z-index: 1000; transition: 0.3s; padding-top: 15px; }
-        .sidebar.active { right: 0; }
-        .menu-list { list-style: none; padding: 0; }
-        .menu-list a { display: block; padding: 15px 20px; color: #e2e8f0; text-decoration: none; border-bottom: 1px solid #1e293b; }
-        
-        .btn-auth-menu { background: #1877f2; color: white; border: none; padding: 15px; width: 90%; margin: 0 5% 15px 5%; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; transition: 0.3s; }
-        .btn-auth-menu:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        /* Khu vực Thẻ Tài Khoản */
-        .user-info-box { background: linear-gradient(135deg, #10b981, #059669); margin: 0 15px 15px 15px; padding: 20px; border-radius: 12px; text-align: center; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .user-info-box .u-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-info-box .u-bal { font-size: 16px; color: #ecfdf5; font-weight: 500; background: rgba(0,0,0,0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; margin-top: 5px; }
-
-        /* View Sections */
-        .view-section { display: none; padding: 10px; animation: fadeIn 0.3s; }
-        .view-section.active { display: block; }
+        .nav { background: #121826; padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,255,195,0.1); }
+        .logo { font-size: 20px; font-weight: bold; color: #00ffc3; cursor: pointer; }
+        .container { max-width: 900px; margin: 20px auto; padding: 10px; }
+        .view { display: none; animation: fadeIn 0.3s; } .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Product Cards */
-        .product-grid { display: grid; gap: 20px; padding: 10px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.05); border: 1px solid #eee; max-width: 400px; margin: auto; }
-        .product-img { height: 180px; background: #0b1120; display: flex; align-items: center; justify-content: center; font-size: 60px; color: #10b981; }
-        .product-info { padding: 20px; text-align: center; }
-        .btn-buy { width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; margin-top: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
-
-        /* Auth Box & Purchase Box */
-        .auth-container, .purchase-box { background: white; padding: 25px; border-radius: 12px; max-width: 400px; margin: 20px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid #eee; }
-        .tab-btn { flex: 1; padding: 12px; background: none; border: none; font-weight: bold; color: #888; cursor: pointer; font-size: 16px; }
-        .tab-btn.active { color: #1877f2; border-bottom: 2px solid #1877f2; }
         
-        .form-auth { display: none; }
-        .form-auth.active { display: block !important; } 
+        .card { background: #121826; border-radius: 12px; padding: 25px; border: 1px solid rgba(0,255,200,0.1); margin-bottom: 20px; }
+        .btn { background: #00ffc3; color: #000; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn:hover:not(:disabled) { box-shadow: 0 0 10px #00ffc3; } .btn:disabled { opacity: 0.5; cursor: wait; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 6px; }
+        input:focus { border-color: #00ffc3; outline: none; }
         
-        .input-group { position: relative; margin-bottom: 15px; }
-        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 18px; outline: none; text-align: center; }
-        input:focus { border-color: #1877f2; box-shadow: 0 0 5px rgba(24,119,242,0.2); }
-        .eye { position: absolute; right: 15px; top: 14px; cursor: pointer; font-size: 20px; }
-
-        /* Máy tính tiền */
-        .calc-box { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; }
-        .calc-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; color: #475569; }
-        .calc-total { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #cbd5e1; font-size: 18px; font-weight: bold; color: #ea580c; }
-
-        /* Deposit */
-        .deposit-box { background: #fff3cd; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #ffeeba; }
-        .syntax { font-size: 24px; color: red; font-weight: bold; background: white; padding: 10px; border: 1px dashed red; margin: 15px 0; display: inline-block; }
-        
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
-        .overlay.active { display: block; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .stat-val { font-size: 28px; font-weight: bold; color: white; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; } th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; }
+        .badge { background: rgba(0,255,195,0.1); color: #00ffc3; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .menu-btn { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-left: 5px; }
     </style>
 </head>
 <body>
-
-    <nav class="navbar">
-        <a href="#" class="logo" onclick="switchView('home')">🔒 XWorld Shop</a>
-        <button class="hamburger" onclick="toggleMenu()">☰</button>
-    </nav>
-
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-    <div class="sidebar" id="sidebar">
-        <button class="btn-auth-menu" id="menuAuthBtn" onclick="goAuth()">Đăng Nhập / Đăng Ký</button>
-
-        <div class="user-info-box" id="userInfoBox">
-            <div class="u-name">👤 <span id="infoUser">Khách</span></div>
-            <div class="u-bal">💰 <span id="infoBal">0</span> đ</div>
+    <div class="nav">
+        <div class="logo" onclick="v('home')">XWORLD</div>
+        <div id="nav-auth">
+            <button class="menu-btn" onclick="v('auth')">Login / Register</button>
         </div>
-
-        <ul class="menu-list">
-            <li><a href="#" onclick="switchView('home')">Trang chủ</a></li>
-            <li><a href="#" onclick="switchView('home')">Danh sách shop</a></li>
-            <li><a href="#" onclick="goDeposit()">Nạp tiền</a></li>
-            <li><a href="#" onclick="alert('Đang phát triển...')">Lịch sử đơn hàng</a></li>
-            <li><a href="#" onclick="alert('Liên hệ Admin: @Zalo_Của_Bạn')">Liên hệ admin</a></li>
-            <li id="logoutLi" style="display:none"><a href="#" onclick="logout()" style="color:#ef4444">Đăng xuất</a></li>
-        </ul>
-    </div>
-
-    <div id="view-home" class="view-section active">
-        <div style="text-align:center; color:#ea580c; font-weight:bold; margin:10px 0; font-size:13px;">THE BIGGEST RANGE OF AUTOMATION TOOLS!</div>
-        
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-img">💻</div>
-                <div class="product-info">
-                    <div style="color:#94a3b8; font-size:13px; font-weight:bold; letter-spacing:1px;">AUTO SCRIPT</div>
-                    <h3 style="margin:8px 0; font-size: 22px; color: #0f172a;">Tool Golike.py</h3>
-                    <p style="color: #64748b; font-size: 14px; line-height: 1.5;">Phần mềm tự động hóa tương tác siêu tốc. Trải nghiệm ngay chỉ với <b>1.000đ/ngày</b>.</p>
-                    
-                    <div style="background: #ecfdf5; padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 13px; color: #059669; border: 1px dashed #10b981; text-align: left; font-weight: 500;">
-                        🔥 Mua >7 ngày: Giảm 15%<br>
-                        🔥 Mua >20 ngày: Giảm 20%<br>
-                        🔥 Mua >30 ngày: Giảm 25%
-                    </div>
-
-                    <button class="btn-buy" onclick="switchView('purchase')">🛒 Tạo Key Ngay</button>
-                </div>
-            </div>
+        <div id="nav-user" style="display:none; align-items:center;">
+            <span style="color:#00ffc3; margin-right:15px; font-weight:bold;" id="uBal">0đ</span>
+            <button class="menu-btn" onclick="v('deposit')">Nạp</button>
+            <button class="menu-btn" onclick="v('history')">Lịch sử</button>
+            <button class="menu-btn" onclick="logout()" style="color:#ef4444;">Thoát</button>
         </div>
     </div>
 
-    <div id="view-purchase" class="view-section">
-        <div class="purchase-box">
-            <h2 style="color: #1877f2; margin-top: 0; text-align: center;">Tool Golike.py</h2>
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 20px;">Nhập số ngày bạn muốn mua. Khuyến mãi sẽ được tự động áp dụng!</p>
-
-            <div class="input-group">
-                <input type="number" id="buyDays" placeholder="Ví dụ: 10" oninput="calcPrice()">
-            </div>
-
-            <div class="calc-box">
-                <div class="calc-row"><span>Tạm tính (1k/ngày):</span><strong id="basePrice">0đ</strong></div>
-                <div class="calc-row"><span>Giảm giá ưu đãi:</span><strong id="discountStr" style="color:#10b981">0%</strong></div>
-                <div class="calc-total"><span>Tổng thanh toán:</span><strong id="finalPrice">0đ</strong></div>
-            </div>
-
-            <button class="btn-auth-menu" id="btnConfirmBuy" style="width: 100%; margin: 15px 0 10px 0; background: #0f172a;" onclick="confirmBuy()">💳 Xác Nhận Thanh Toán</button>
-            <button class="btn-auth-menu" style="width: 100%; margin: 0; background: #94a3b8;" onclick="switchView('home')">🔙 Quay lại</button>
-        </div>
-    </div>
-
-    <div id="view-auth" class="view-section">
-        <div class="auth-container">
-            <h2 style="text-align:center; color:#1877f2; margin-bottom:20px;">XWorld Account</h2>
-            <div class="tabs">
-                <button class="tab-btn active" id="tabLogin" onclick="setTab('login')">Đăng nhập</button>
-                <button class="tab-btn" id="tabReg" onclick="setTab('register')">Đăng ký</button>
-            </div>
-
-            <div id="form-login" class="form-auth active">
-                <div class="input-group"><input type="text" id="lUser" placeholder="Tên tài khoản"></div>
-                <div class="input-group">
-                    <input type="password" id="lPass" placeholder="Mật khẩu">
-                    <span class="eye" onclick="togPass('lPass')">👁️</span>
-                </div>
-                <button class="btn-auth-menu" id="btnLogin" style="width:100%; margin:10px 0;" onclick="doLogin()">Đăng Nhập</button>
-            </div>
-
-            <div id="form-register" class="form-auth">
-                <div class="input-group"><input type="text" id="rUser" placeholder="Tên tài khoản mới"></div>
-                <div class="input-group">
-                    <input type="password" id="rPass" placeholder="Mật khẩu (8+ ký tự, chữ & số)">
-                    <span class="eye" onclick="togPass('rPass')">👁️</span>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="rConf" placeholder="Xác nhận mật khẩu">
-                    <span class="eye" onclick="togPass('rConf')">👁️</span> 
-                </div>
-                <button class="btn-auth-menu" id="btnReg" style="width:100%; margin:10px 0; background:#42b72a;" onclick="doReg()">Tạo Tài Khoản</button>
+    <div class="container">
+        <div id="v-home" class="view active">
+            <div class="grid" style="margin-bottom: 30px;">
+                <div class="card"><h3>TOOL GOLIKE PRO</h3><p style="color:#94a3b8">Bypass chống ban, gắn HWID bảo mật.</p><div class="stat-val">1,000đ<span style="font-size:14px; color:#94a3b8"> /ngày</span></div><button class="btn" style="margin-top:15px;" onclick="v('buy')">Mua Key VIP</button></div>
             </div>
         </div>
-    </div>
 
-    <div id="view-deposit" class="view-section">
-        <div class="deposit-box">
-            <h3>💳 QUÉT MÃ NẠP TIỀN</h3>
-            <p style="font-size:14px; color:#666;">Mã QR đã tự điền nội dung cho bạn</p>
-            <div style="background:white; padding:10px; display:inline-block; border-radius:12px; border:2px solid #1877f2;">
-                <img id="qrImg" src="" style="width:220px; display:block;">
-            </div>
-            <p>Nội dung: <span class="syntax" id="memoText"></span></p>
-            <button class="btn-auth-menu" id="btnRefresh" style="width:auto; padding:10px 25px;" onclick="refresh()">🔄 Cập nhật số dư</button>
-        </div>
+        <div id="v-auth" class="view"><div class="card" style="max-width:400px; margin:auto;">
+            <h2 style="text-align:center; color:#00ffc3;">TÀI KHOẢN</h2>
+            <input id="u" placeholder="Tên tài khoản (4-20 ký tự)"><input id="p" type="password" placeholder="Mật khẩu (Từ 8 ký tự)">
+            <button class="btn" id="btnAuth" onclick="doAuth('login')">Đăng Nhập</button>
+            <button class="btn" style="background:transparent; color:#00ffc3; border:1px solid #00ffc3; margin-top:10px;" onclick="doAuth('register')">Đăng Ký Mới</button>
+        </div></div>
+
+        <div id="v-buy" class="view"><div class="card" style="max-width:400px; margin:auto;">
+            <h2>MUA KEY GOLIKE</h2><p style="color:#94a3b8">Nhập số ngày (>7 giảm 15%, >20 giảm 20%, >30 giảm 25%)</p>
+            <input id="days" type="number" placeholder="Số ngày mua" oninput="calc()"><div style="margin-bottom:15px; font-size:18px;">Thanh toán: <strong id="price" style="color:#00ffc3">0đ</strong></div>
+            <button class="btn" id="btnBuy" onclick="buy()">Xác Nhận Mua</button>
+        </div></div>
+
+        <div id="v-history" class="view"><div class="card">
+            <h2>LỊCH SỬ KEY</h2><div id="histLoad" style="color:#00ffc3">Đang tải...</div>
+            <table><thead><tr><th>Mã Key</th><th>Hạn dùng</th><th>Trạng thái</th></tr></thead><tbody id="histBody"></tbody></table>
+        </div></div>
+
+        <div id="v-deposit" class="view"><div class="card" style="text-align:center;">
+            <h2>NẠP TIỀN</h2><p>Quét mã QR. Chuyển xong bấm Cập nhật.</p>
+            <img id="qr" src="" style="width:200px; border-radius:10px; margin:15px 0;"><br>
+            <button class="btn" id="btnRef" style="width:auto;" onclick="refresh()">Cập nhật số dư</button>
+        </div></div>
     </div>
 
     <script>
-        // ⚠️ THAY LINK /EXEC CỦA BẠN VÀO ĐÂY
         const API = "LINK_API_CUA_BAN_O_DAY";
+        let user = localStorage.getItem("xw_u") || "", pass = localStorage.getItem("xw_p") || "", bal = 0;
+
+        window.onload = () => { if(user) doAuth('login', true); }
+        function v(id) { document.querySelectorAll('.view').forEach(e => e.classList.remove('active')); document.getElementById('v-'+id).classList.add('active'); if(id==='history') loadHist(); if(id==='deposit') { if(!user)return v('auth'); document.getElementById('qr').src = `https://img.vietqr.io/image/MB-0364675622-compact.png?addInfo=NAP ${user}`; } }
+        function calc() { let d = parseInt(document.getElementById('days').value) || 0, b = d*1000, p = d>30?b*0.75:d>20?b*0.8:d>7?b*0.85:b; document.getElementById('price').innerText = Math.round(p).toLocaleString() + 'đ'; }
         
-        let user = "", pass = "", bal = 0;
-        let isBusy = false; 
-
-        window.onload = function() {
-            let savedUser = localStorage.getItem("xw_user");
-            let savedPass = localStorage.getItem("xw_pass");
-            if(savedUser && savedPass) {
-                document.getElementById('lUser').value = savedUser;
-                document.getElementById('lPass').value = savedPass;
-                doLogin(true); 
-            }
-        };
-
-        function toggleMenu() { 
-            document.getElementById('sidebar').classList.toggle('active'); 
-            document.getElementById('overlay').classList.toggle('active'); 
-        }
-
-        function switchView(v) { 
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.getElementById('view-' + v).classList.add('active');
-            if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-            window.scrollTo(0, 0);
-        }
-
-        function setTab(t) {
-            document.getElementById('form-login').classList.remove('active');
-            document.getElementById('form-register').classList.remove('active');
-            document.getElementById('tabLogin').classList.remove('active');
-            document.getElementById('tabReg').classList.remove('active');
-
-            if(t === 'login') {
-                document.getElementById('form-login').classList.add('active');
-                document.getElementById('tabLogin').classList.add('active');
-            } else {
-                document.getElementById('form-register').classList.add('active');
-                document.getElementById('tabReg').classList.add('active');
-            }
-        }
-
-        function togPass(id) { let x = document.getElementById(id); x.type = x.type === "password" ? "text" : "password"; }
-        function fixBal(b) { let n = parseInt(b); return isNaN(n) ? 0 : n; }
-
-        function setBtnLoading(btnId, isLoading, loadingText = "⏳ Đang xử lý...") {
-            let btn = document.getElementById(btnId);
-            if(!btn) return;
-            if(isLoading) {
-                btn.disabled = true;
-                btn.dataset.originalText = btn.innerText;
-                btn.innerText = loadingText;
-            } else {
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerText = btn.dataset.originalText;
-                    isBusy = false; 
-                }, 1500); 
-            }
-        }
-
-        function updateUI(u, b) {
-            document.getElementById('menuAuthBtn').style.display = 'none'; 
-            document.getElementById('userInfoBox').style.display = 'block'; 
-            document.getElementById('infoUser').innerText = u;
-            document.getElementById('infoBal').innerText = fixBal(b).toLocaleString();
-            document.getElementById('logoutLi').style.display = 'block'; 
-        }
-
-        // TÍNH TOÁN TIỀN REAL-TIME
-        function calcPrice() {
-            let days = parseInt(document.getElementById('buyDays').value);
-            if(isNaN(days) || days <= 0) {
-                document.getElementById('basePrice').innerText = '0đ';
-                document.getElementById('discountStr').innerText = '0%';
-                document.getElementById('finalPrice').innerText = '0đ';
-                return;
-            }
-            
-            let base = days * 1000;
-            let discount = 0;
-            
-            if (days > 30) discount = 25;
-            else if (days > 20) discount = 20;
-            else if (days > 7) discount = 15;
-
-            let final = base * (1 - discount/100);
-
-            document.getElementById('basePrice').innerText = base.toLocaleString() + 'đ';
-            document.getElementById('discountStr').innerText = discount + '%';
-            document.getElementById('finalPrice').innerText = final.toLocaleString() + 'đ';
-        }
-
-        // MUA HÀNG
-        async function confirmBuy() {
-            let days = parseInt(document.getElementById('buyDays').value);
-            if(isNaN(days) || days <= 0) return alert("Vui lòng nhập số ngày hợp lệ!");
-            if(!user) { alert("Bạn cần đăng nhập trước!"); return goAuth(); }
-            if(isBusy) return;
-            
-            let finalStr = document.getElementById('finalPrice').innerText;
-            if(!confirm(`Thanh toán ${finalStr} để mua Key Tool ${days} ngày?`)) return;
-            
-            isBusy = true; setBtnLoading('btnConfirmBuy', true, "⏳ Đang kết nối máy chủ...");
-            
+        function setUI(u, b) { document.getElementById('nav-auth').style.display = 'none'; document.getElementById('nav-user').style.display = 'flex'; document.getElementById('uBal').innerText = Number(b).toLocaleString()+'đ'; }
+        
+        async function doAuth(act, silent=false) {
+            let u = silent ? user : document.getElementById('u').value.trim(), p = silent ? pass : document.getElementById('p').value;
+            if(!u || !p) return alert("Nhập đủ thông tin!");
+            if(!silent) { document.getElementById('btnAuth').disabled = true; document.getElementById('btnAuth').innerText = "Đang xử lý..."; }
             try {
-                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${days}`);
-                let d = await res.json();
+                let res = await fetch(`${API}?action=${act}&user=${u}&pass=${p}`); let d = await res.json();
                 if(d.status === 'success') {
-                    bal = fixBal(d.new_balance);
-                    updateUI(user, bal);
-                    prompt("✅ Giao dịch thành công! Copy mã Key của bạn ở ô bên dưới:", d.key);
-                    switchView('home');
-                } else alert("❌ Lỗi: " + d.message);
-            } catch(e) { alert("Lỗi giao dịch, vui lòng thử lại!"); }
-            
-            setBtnLoading('btnConfirmBuy', false);
+                    if(act==='login') { user=u; pass=p; bal=d.balance; localStorage.setItem("xw_u", u); localStorage.setItem("xw_p", p); setUI(user, bal); if(!silent) v('home'); }
+                    else { alert("Đăng ký thành công! Hãy đăng nhập."); }
+                } else if(!silent) alert(d.message); else logout();
+            } catch(e) { if(!silent) alert("Lỗi mạng!"); }
+            if(!silent) { document.getElementById('btnAuth').disabled = false; document.getElementById('btnAuth').innerText = "Đăng Nhập"; }
         }
 
-        async function doLogin(isSilent = false) {
-            if(isBusy && !isSilent) return; 
-            let u = document.getElementById('lUser').value.trim();
-            let p = document.getElementById('lPass').value;
-            if(!u || !p) { if(!isSilent) alert("Nhập đủ thông tin!"); return; }
-            if(!isSilent) { isBusy = true; setBtnLoading('btnLogin', true, "⏳ Đang đăng nhập..."); }
-            
+        async function buy() {
+            let d = parseInt(document.getElementById('days').value); if(!d || d<=0) return alert("Nhập số ngày!"); if(!user) return v('auth');
+            document.getElementById('btnBuy').disabled = true; document.getElementById('btnBuy').innerText = "Đang tạo Key...";
             try {
-                let res = await fetch(`${API}?action=login&user=${u}&pass=${pass}`);
-                let d = await res.json();
-                if(d.status === 'success') {
-                    user = u; pass = p; bal = fixBal(d.balance);
-                    localStorage.setItem("xw_user", u); localStorage.setItem("xw_pass", p);
-                    updateUI(user, bal);
-                    if(!isSilent) { alert("Đăng nhập thành công!"); switchView('home'); }
-                } else {
-                    if(!isSilent) alert(d.message);
-                    else { localStorage.removeItem("xw_user"); localStorage.removeItem("xw_pass"); }
-                }
-            } catch(e) { if(!isSilent) alert("Lỗi kết nối máy chủ!"); }
-            if(!isSilent) setBtnLoading('btnLogin', false);
+                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${d}`); let r = await res.json();
+                if(r.status === 'success') { bal = r.new_balance; setUI(user, bal); prompt("✅ Copy Key của bạn:", r.key); v('history'); } else alert(r.message);
+            } catch(e) { alert("Lỗi mạng!"); }
+            document.getElementById('btnBuy').disabled = false; document.getElementById('btnBuy').innerText = "Xác Nhận Mua";
         }
 
-        async function doReg() {
-            if(isBusy) return;
-            let u = document.getElementById('rUser').value.trim();
-            let p = document.getElementById('rPass').value;
-            let c = document.getElementById('rConf').value;
-            if(p.length < 8 || !/[0-9]/.test(p) || !/[a-zA-Z]/.test(p)) return alert("Mật khẩu cần 8+ ký tự, gồm cả chữ và số!");
-            if(p !== c) return alert("Mật khẩu xác nhận không khớp!");
-            isBusy = true; setBtnLoading('btnReg', true, "⏳ Đang tạo tài khoản...");
-            
-            try {
-                let res = await fetch(`${API}?action=register&user=${u}&pass=${p}`);
-                let d = await res.json();
-                if(d.status === 'success') { 
-                    alert("Đăng ký thành công! Mời đăng nhập."); 
-                    setTab('login'); 
-                    document.getElementById('lUser').value = u; document.getElementById('lPass').value = p;
-                } else alert(d.message);
-            } catch(e) { alert("Lỗi kết nối máy chủ!"); }
-            setBtnLoading('btnReg', false);
-        }
-
-        function goDeposit() {
-            if(!user) { alert("Hãy đăng nhập trước!"); return goAuth(); }
-            let m = "NAP " + user.toUpperCase();
-            document.getElementById('qrImg').src = `https://img.vietqr.io/image/MB-0364675622-compact.png?addInfo=${encodeURIComponent(m)}`;
-            document.getElementById('memoText').innerText = m;
-            switchView('deposit');
+        async function loadHist() {
+            if(!user) return v('auth'); document.getElementById('histLoad').innerText = "Đang tải..."; document.getElementById('histBody').innerHTML = "";
+            let res = await fetch(`${API}?action=history&user=${user}&pass=${pass}`); let r = await res.json();
+            if(r.status === 'success') {
+                let h = ""; r.data.forEach(k => { h += `<tr><td style="font-family:monospace; color:#38bdf8;">${k.key}</td><td>${new Date(k.expire).toLocaleDateString()}</td><td><span class="badge">${k.status}</span></td></tr>`; });
+                document.getElementById('histBody').innerHTML = h; document.getElementById('histLoad').innerText = "";
+            }
         }
 
         async function refresh() {
-            if(!user || isBusy) return;
-            isBusy = true; setBtnLoading('btnRefresh', true, "⏳ Đang tải...");
-            try {
-                let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
-                let d = await res.json();
-                if(d.status === 'success') {
-                    bal = fixBal(d.balance); updateUI(user, bal);
-                    alert("✅ Đã cập nhật số dư mới nhất!");
-                }
-            } catch(e) { alert("Lỗi kết nối!"); }
-            setBtnLoading('btnRefresh', false);
+            document.getElementById('btnRef').innerText = "Đang tải...";
+            let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`); let d = await res.json();
+            if(d.status === 'success') { bal = d.balance; setUI(user, bal); alert("Đã cập nhật!"); } document.getElementById('btnRef').innerText = "Cập nhật số dư";
         }
-        
-        function goAuth() { switchView('auth'); if(document.getElementById('sidebar').classList.contains('active')) toggleMenu(); }
-
-        function logout() { 
-            if(confirm("Bạn muốn đăng xuất?")) {
-                localStorage.removeItem("xw_user"); localStorage.removeItem("xw_pass");
-                location.reload(); 
-            }
-        }
-    </script>
-
-    <script>
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) { return false; } 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } 
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
-            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) { return false; } 
-        }
-        setInterval(function() { (function() { return false; }['constructor']('debugger')()); }, 50);
+        function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
