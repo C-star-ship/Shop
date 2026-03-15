@@ -3,256 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XWorld Shop - Tự Động</title>
+    <title>XWorld Shop</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; display: flex; justify-content: center; padding: 20px; box-sizing: border-box; min-height: 100vh; }
-        .container { background: white; max-width: 400px; width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; align-self: flex-start; margin-top: 20px; }
-        h2 { text-align: center; color: #1877f2; margin-top: 0; font-size: 24px; }
+        /* CSS Reset & Cơ bản */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f5f9; margin: 0; padding: 0; overflow-x: hidden; }
+        * { box-sizing: border-box; }
         
-        /* Tabs Đăng nhập / Đăng ký */
-        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-        .tab-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 16px; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { color: #1877f2; border-bottom: 2px solid #1877f2; }
+        /* Navbar (Thanh điều hướng trên cùng) */
+        .navbar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: bold; color: #0f172a; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .hamburger { font-size: 24px; cursor: pointer; color: #0f172a; background: none; border: none; padding: 0; }
+
+        /* Lớp phủ đen khi mở menu */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; opacity: 0; transition: 0.3s; }
+        .overlay.active { display: block; opacity: 1; }
+
+        /* Menu trượt (Sidebar) giống ảnh 2 */
+        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background-color: #0b1120; color: white; z-index: 1000; transition: right 0.3s ease-in-out; overflow-y: auto; padding-top: 20px; }
+        .sidebar.active { right: 0; }
         
-        /* Form Inputs */
-        .form-section { display: none; animation: fadeIn 0.4s; }
-        .form-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .sidebar-header { padding: 0 20px 20px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-auth-menu { background-color: #1877f2; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; margin-bottom: 20px; }
         
+        .menu-list { list-style: none; padding: 0; margin: 0; }
+        .menu-list li { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .menu-list a { display: block; padding: 18px 20px; color: #e2e8f0; text-decoration: none; font-size: 15px; transition: 0.2s; }
+        .menu-list a:hover { background-color: rgba(255, 255, 255, 0.1); color: white; }
+        
+        .close-btn { color: white; font-size: 24px; cursor: pointer; background: none; border: none; }
+
+        /* Tiêu đề trang */
+        .page-title { text-align: center; color: #ea580c; font-size: 14px; font-weight: bold; text-transform: uppercase; margin: 20px 0 10px 0; letter-spacing: 1px; }
+
+        /* Khu vực hiển thị sản phẩm (Grid) giống ảnh 1 */
+        .product-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 10px 20px 30px 20px; }
+        
+        .product-card { background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; }
+        .product-image { height: 220px; background-color: #f8fafc; display: flex; justify-content: center; align-items: center; color: #cbd5e1; font-size: 40px; } /* Phần khung ảnh trắng */
+        .product-info { padding: 20px; }
+        .product-title { font-size: 18px; font-weight: bold; color: #1e293b; margin: 0 0 10px 0; }
+        
+        .product-meta { display: flex; justify-content: space-between; align-items: flex-end; }
+        .product-category { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .product-price { display: flex; align-items: center; gap: 10px; }
+        .old-price { font-size: 14px; color: #94a3b8; text-decoration: line-through; }
+        .new-price { font-size: 20px; font-weight: bold; color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 2px; }
+
+        .btn-buy { width: 100%; padding: 12px; background-color: #0f172a; color: white; border: none; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; border-radius: 4px; transition: 0.3s; }
+        .btn-buy:hover { background-color: #1e293b; }
+
+        /* Các màn hình ẩn/hiện */
+        .view-section { display: none; animation: fadeIn 0.3s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Form Đăng nhập / Đăng ký (Tái sử dụng style cũ cho gọn) */
+        .auth-container { max-width: 400px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .input-group { position: relative; margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; outline: none; }
-        input:focus { border-color: #1877f2; }
-        .password-input { padding-right: 40px; }
-        
-        /* Con mắt mật khẩu */
-        .eye-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px; user-select: none; }
-        
-        /* Nút bấm */
-        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
-        .btn-blue { background-color: #1877f2; }
-        .btn-blue:hover { background-color: #166fe5; }
-        .btn-green { background-color: #42b72a; }
-        .btn-green:hover { background-color: #36a420; }
-        
-        /* Đăng nhập Google */
-        .divider { display: flex; align-items: center; text-align: center; color: #888; margin: 20px 0; font-size: 14px; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
-        .divider::before { margin-right: 10px; }
-        .divider::after { margin-left: 10px; }
-        .btn-google { background-color: white; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-google:hover { background-color: #f7f7f7; }
-        .btn-google img { width: 20px; }
-        
-        /* Giao diện Shop */
-        .hidden { display: none !important; }
-        .balance-box { background: #e7f3ff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; border: 1px solid #1877f2; }
-        .balance-box span { font-size: 24px; font-weight: bold; color: #1877f2; }
-        .package { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .package h4 { margin: 0 0 5px 0; font-size: 16px; }
-        .package p { margin: 0; color: #666; font-size: 14px; }
-        .btn-buy { width: auto; padding: 8px 15px; margin: 0; }
-        .deposit-info { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; border: 1px solid #ffeeba; }
-        .btn-logout { background-color: #dc3545; margin-top: 20px; }
-        #loading { text-align: center; color: #1877f2; font-style: italic; margin-bottom: 10px; display: none; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .btn-blue { width: 100%; padding: 12px; background-color: #1877f2; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .btn-green { width: 100%; padding: 12px; background-color: #42b72a; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* Thông tin nạp tiền */
+        .deposit-box { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px; border: 1px solid #ffeeba; text-align: center; }
+        .deposit-box h3 { color: #856404; margin-top: 0; }
+        .syntax { font-size: 24px; color: red; font-weight: bold; margin: 15px 0; padding: 10px; background: white; border: 1px dashed red; display: inline-block; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="auth-screen">
-        <h2>🔒 XWorld Shop</h2>
-        
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('login')">Đăng nhập</button>
-            <button class="tab-btn" onclick="switchTab('register')">Đăng ký</button>
+    <nav class="navbar">
+        <a href="#" class="logo" onclick="switchView('home')">🔒 XWorld Shop</a>
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+    </nav>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="btn-auth-menu" id="menuAuthBtn" onclick="openAuth()">Đăng Nhập / Đăng Ký</button>
+            <button class="close-btn" onclick="toggleMenu()">×</button>
         </div>
-
-        <div id="loading">⏳ Đang xử lý...</div>
-
-        <div id="form-login" class="form-section active">
-            <div class="input-group">
-                <input type="text" id="logUser" placeholder="Tên tài khoản">
-            </div>
-            <div class="input-group">
-                <input type="password" id="logPass" class="password-input" placeholder="Mật khẩu">
-                <span class="eye-icon" onclick="toggleEye('logPass', this)">👁️</span>
-            </div>
-            <button class="btn-blue" onclick="login()">Đăng Nhập</button>
-        </div>
-
-        <div id="form-register" class="form-section">
-            <div class="input-group">
-                <input type="text" id="regUser" placeholder="Tên tài khoản mới">
-            </div>
-            <div class="input-group">
-                <input type="password" id="regPass" class="password-input" placeholder="Mật khẩu (ít nhất 8 ký tự, gồm chữ & số)">
-                <span class="eye-icon" onclick="toggleEye('regPass', this)">👁️</span>
-            </div>
-            <div class="input-group">
-                <input type="password" id="regConfirm" class="password-input" placeholder="Xác nhận lại mật khẩu">
-                <span class="eye-icon" onclick="toggleEye('regConfirm', this)">👁️</span>
-            </div>
-            <button class="btn-green" onclick="register()">Tạo Tài Khoản</button>
-        </div>
-
-        <div class="divider">Hoặc</div>
-
-        <button class="btn-google" onclick="googleLogin()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-            Tiếp tục với Google
-        </button>
+        <ul class="menu-list">
+            <li><a href="#" onclick="switchView('home'); toggleMenu()">Trang chủ</a></li>
+            <li><a href="#" onclick="alert('Tính năng đang phát triển'); toggleMenu()">Về chúng tôi</a></li>
+            <li><a href="#" onclick="openDeposit(); toggleMenu()">Nạp tiền</a></li>
+            <li><a href="#" onclick="switchView('home'); toggleMenu()">Danh sách phần mềm</a></li>
+            <li><a href="#" onclick="alert('Tính năng đang phát triển'); toggleMenu()">Cấp bậc tài khoản</a></li>
+            <li><a href="#" onclick="alert('Tính năng đang phát triển'); toggleMenu()">Lịch sử đơn hàng</a></li>
+            <li><a href="#" onclick="alert('Tính năng đang phát triển'); toggleMenu()">Liên hệ</a></li>
+            <li id="menuLogoutBtn" style="display: none;"><a href="#" onclick="logout()" style="color: #ef4444;">Đăng xuất</a></li>
+        </ul>
     </div>
 
-    <div id="shop-screen" class="hidden">
-        <h2>🛒 Cửa Hàng VIP</h2>
-        <div class="balance-box">
-            👤 <b id="display-user">Admin</b><br>
-            💰 Số dư: <span id="display-balance">0</span> đ
-            <button style="width: auto; padding: 5px 10px; font-size: 12px; margin-left: 10px; background: #42b72a;" onclick="refreshBalance()">🔄 Làm mới</button>
-        </div>
+    <div id="view-home" class="view-section active">
+        <div class="page-title">THE BIGGEST RANGE OF AUTOMATION TOOLS!</div>
+        
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-image">📷</div> <div class="product-info">
+                    <h3 class="product-title">Gói VIP 1 Ngày</h3>
+                    <div class="product-meta">
+                        <span class="product-category">TOOL GAME</span>
+                        <div class="product-price">
+                            <span class="old-price">20.000đ</span>
+                            <span class="new-price">10.000đ</span>
+                        </div>
+                    </div>
+                    <button class="btn-buy" onclick="buyVip(1)">🛒 Mua Ngay</button>
+                </div>
+            </div>
 
-        <div class="package">
-            <div><h4>Gói VIP 1 Ngày</h4><p>Giá: 10.000đ</p></div>
-            <button class="btn-buy btn-blue" onclick="buyVip(1)">Mua Ngay</button>
-        </div>
-        <div class="package">
-            <div><h4>Gói VIP 7 Ngày</h4><p>Giá: 70.000đ</p></div>
-            <button class="btn-buy btn-green" onclick="buyVip(7)">Mua Ngay</button>
-        </div>
+            <div class="product-card">
+                <div class="product-image">📷</div>
+                <div class="product-info">
+                    <h3 class="product-title">Gói VIP 7 Ngày</h3>
+                    <div class="product-meta">
+                        <span class="product-category">TOOL GAME</span>
+                        <div class="product-price">
+                            <span class="old-price">100.000đ</span>
+                            <span class="new-price">70.000đ</span>
+                        </div>
+                    </div>
+                    <button class="btn-buy" onclick="buyVip(7)">🛒 Mua Ngay</button>
+                </div>
+            </div>
 
-        <div class="deposit-info">
-            <strong>💳 NẠP TIỀN TỰ ĐỘNG 24/7</strong><br>
-            Ngân hàng: MBBank<br>
-            STK: 0364675622<br>
-            Chủ thẻ: CAO DUY CUONG<br>
-            Nội dung chuyển khoản:<br>
-            <strong style="font-size: 18px; color: red;">NAP <span id="deposit-syntax"></span></strong><br>
-            <i>(Chuyển xong bấm "Làm mới" để nhận tiền)</i>
+            <div class="product-card">
+                <div class="product-image">📷</div>
+                <div class="product-info">
+                    <h3 class="product-title">Gói VIP 30 Ngày</h3>
+                    <div class="product-meta">
+                        <span class="product-category">TOOL GAME</span>
+                        <div class="product-price">
+                            <span class="old-price">400.000đ</span>
+                            <span class="new-price">300.000đ</span>
+                        </div>
+                    </div>
+                    <button class="btn-buy" onclick="buyVip(30)">🛒 Mua Ngay</button>
+                </div>
+            </div>
         </div>
-
-        <button class="btn-logout" onclick="logout()">Đăng xuất</button>
     </div>
-</div>
 
-<script>
-    // ⚠️ QUAN TRỌNG: DÁN LINK API MỚI NHẤT CỦA BẠN VÀO ĐÂY
-    const API_URL = "https://script.google.com/macros/s/AKfycbyiKnNvwcegjKcPWtr0JU7kjgwOfb5U9F0Z3abMelNn52BcB5N7wpmyf4PSc4myupd1UA/exec";
-    let currentUser = ""; let currentPass = "";
+    <div id="view-auth" class="view-section">
+        <div class="auth-container">
+            <h2 style="text-align: center; color: #1877f2; margin-top: 0;">XWorld Account</h2>
+            
+            <div id="auth-forms">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Tên tài khoản">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Mật khẩu">
+                </div>
+                <div style="text-align: center; color: #666; font-style: italic; margin-bottom: 15px; display: none;" id="loading">⏳ Đang xử lý...</div>
+                
+                <button class="btn-blue" onclick="login()">Đăng Nhập</button>
+                <button class="btn-green" onclick="register()">Tạo Tài Khoản Mới</button>
+            </div>
+        </div>
+    </div>
 
-    // Chuyển Tab Đăng nhập / Đăng ký
-    function switchTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+    <div id="view-deposit" class="view-section">
+        <div class="deposit-box">
+            <h3>💳 NẠP TIỀN TỰ ĐỘNG 24/7</h3>
+            <p>Vui lòng chuyển khoản vào thông tin dưới đây để tự động cộng tiền:</p>
+            <div style="text-align: left; display: inline-block; margin: 10px auto;">
+                <b>Ngân hàng:</b> MBBank<br>
+                <b>Số tài khoản:</b> 0364675622<br>
+                <b>Chủ thẻ:</b> CAO DUY CUONG
+            </div>
+            <p>Nội dung chuyển khoản (Ghi chính xác chữ màu đỏ):</p>
+            <div class="syntax">NAP <span id="deposit-syntax">CHƯA_ĐĂNG_NHẬP</span></div>
+            <p><i>Sau khi chuyển khoản, vui lòng đợi 30 giây - 1 phút, tiền sẽ tự động được cộng vào tài khoản của bạn!</i></p>
+            <button class="btn-blue" onclick="refreshBalance()" style="width: auto; padding: 10px 20px;">🔄 Làm mới số dư</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ DÁN LINK API MỚI NHẤT CỦA BẠN VÀO ĐÂY
+        const API_URL = "LINK_API_CUA_BAN_O_DAY";
         
-        if(tab === 'login') {
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            document.getElementById('form-login').classList.add('active');
-        } else {
-            document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            document.getElementById('form-register').classList.add('active');
+        let currentUser = ""; 
+        let currentPass = "";
+        let currentBalance = 0;
+
+        // Xử lý bật/tắt Menu trượt
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
         }
-    }
 
-    // Bật tắt Con mắt mật khẩu
-    function toggleEye(inputId, icon) {
-        let input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.innerText = "🙈"; // Icon nhắm mắt
-        } else {
-            input.type = "password";
-            icon.innerText = "👁️"; // Icon mở mắt
+        // Chuyển đổi giữa các màn hình (Home, Auth, Deposit)
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            window.scrollTo(0, 0); // Cuộn lên đầu trang
         }
-    }
 
-    // Nút Google Login (Thông báo)
-    function googleLogin() {
-        alert("⚠️ Tính năng đăng nhập Google đang được phát triển. Để dùng tính năng này, bạn cần phải có máy chủ riêng và API Key từ Google Cloud. Vui lòng tạo tài khoản thủ công!");
-    }
-
-    function showLoad(show) { document.getElementById('loading').style.display = show ? 'block' : 'none'; }
-    function format(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
-
-    // Kiểm tra độ khó của mật khẩu
-    function validatePassword(pwd) {
-        if (pwd.length < 8) return "Mật khẩu phải có ít nhất 8 ký tự!";
-        if (/^(12345678|123456789|password|abcdefgh)$/i.test(pwd)) return "Mật khẩu quá dễ đoán (12345678...), vui lòng chọn mật khẩu khác!";
-        if (!/[A-Za-z]/.test(pwd) || !/[0-9]/.test(pwd)) return "Mật khẩu bắt buộc phải chứa CẢ CHỮ CÁI và CHỮ SỐ!";
-        return "OK";
-    }
-
-    async function register() {
-        let u = document.getElementById('regUser').value.trim();
-        let p = document.getElementById('regPass').value;
-        let c = document.getElementById('regConfirm').value;
-
-        if(!u || !p || !c) return alert("Vui lòng điền đầy đủ thông tin!");
-        
-        let passCheck = validatePassword(p);
-        if (passCheck !== "OK") return alert("❌ LỖI BẢO MẬT:\n" + passCheck);
-        if (p !== c) return alert("❌ Mật khẩu xác nhận không khớp!");
-
-        showLoad(true);
-        try {
-            let res = await fetch(`${API_URL}?action=register&user=${u}&pass=${p}`);
-            let data = await res.json();
-            if (data.status === 'success') {
-                alert("✅ TẠO TÀI KHOẢN THÀNH CÔNG!\nHãy chuyển sang tab Đăng nhập để vào Shop.");
-                switchTab('login');
-                document.getElementById('logUser').value = u;
-                document.getElementById('logPass').value = p;
+        // Bấm nút Đăng nhập trên menu
+        function openAuth() {
+            toggleMenu();
+            if (currentUser === "") {
+                switchView('auth');
             } else {
-                alert("❌ Lỗi: " + data.message);
+                // Nếu đã đăng nhập, bấm vào đây coi như về trang chủ xem thông tin
+                switchView('home');
             }
-        } catch (e) { alert("Lỗi mạng!"); }
-        showLoad(false);
-    }
+        }
 
-    async function login() {
-        let u = document.getElementById('logUser').value.trim();
-        let p = document.getElementById('logPass').value;
-        if(!u || !p) return alert("Vui lòng nhập tài khoản và mật khẩu!");
-        
-        showLoad(true);
-        try {
-            let res = await fetch(`${API_URL}?action=login&user=${u}&pass=${p}`);
-            let data = await res.json();
-            if(data.status === 'success') {
-                currentUser = u; currentPass = p;
-                document.getElementById('display-user').innerText = u;
-                document.getElementById('deposit-syntax').innerText = u;
-                document.getElementById('display-balance').innerText = format(data.balance);
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('shop-screen').classList.remove('hidden');
-            } else { alert("❌ Sai tài khoản hoặc mật khẩu!"); }
-        } catch (e) { alert("Lỗi mạng!"); }
-        showLoad(false);
-    }
-
-    async function refreshBalance() {
-        try {
-            let res = await fetch(`${API_URL}?action=login&user=${currentUser}&pass=${currentPass}`);
-            let data = await res.json();
-            if(data.status === 'success') {
-                document.getElementById('display-balance').innerText = format(data.balance);
+        // Bấm nút Nạp tiền
+        function openDeposit() {
+            if (currentUser === "") {
+                alert("Bạn cần đăng nhập trước khi nạp tiền!");
+                switchView('auth');
+            } else {
+                switchView('deposit');
             }
-        } catch (e) {}
-    }
+        }
 
-    async function buyVip(days) {
-        if(!confirm(`Mua gói VIP ${days} ngày với giá ${days*10}.000đ?`)) return;
-        try {
-            let res = await fetch(`${API_URL}?action=buy&user=${currentUser}&pass=${currentPass}&days=${days}`);
-            let data = await res.json();
-            if(data.status === 'success') {
-                document.getElementById('display-balance').innerText = format(data.new_balance);
-                prompt("✅ MUA THÀNH CÔNG! Copy mã Key của bạn ở bên dưới:", data.key);
-            } else { alert("❌ Thất bại: " + data.message); }
-        } catch (e) { alert("Lỗi mạng!"); }
-    }
+        function showLoad(show) { document.getElementById('loading').style.display = show ? 'block' : 'none'; }
+        function format(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
-    function logout() { location.reload(); }
-</script>
+        // Đăng nhập
+        async function login() {
+            let u = document.getElementById('username').value.trim();
+            let p = document.getElementById('password').value;
+            if(!u || !p) return alert("Vui lòng nhập tài khoản và mật khẩu!");
+            
+            showLoad(true);
+            try {
+                let res = await fetch(`${API_URL}?action=login&user=${u}&pass=${p}`);
+                let data = await res.json();
+                if(data.status === 'success') {
+                    // Lưu trạng thái đăng nhập
+                    currentUser = u; 
+                    currentPass = p;
+                    currentBalance = data.balance;
+                    
+                    // Cập nhật giao diện
+                    document.getElementById('deposit-syntax').innerText = u.toUpperCase();
+                    document.getElementById('menuAuthBtn').innerHTML = `👤 ${u} <br> 💰 ${format(currentBalance)}đ`;
+                    document.getElementById('menuAuthBtn').style.backgroundColor = '#10b981'; // Đổi thành màu xanh lá
+                    document.getElementById('menuLogoutBtn').style.display = 'block';
+                    
+                    alert("Đăng nhập thành công!");
+                    switchView('home');
+                } else { alert("❌ Sai tài khoản hoặc mật khẩu!"); }
+            } catch (e) { alert("Lỗi mạng!"); }
+            showLoad(false);
+        }
 
+        // Đăng ký
+        async function register() {
+            let u = document.getElementById('username').value.trim();
+            let p = document.getElementById('password').value;
+            if(!u || !p) return alert("Vui lòng điền tài khoản và mật khẩu!");
+            if(p.length < 8) return alert("Mật khẩu phải từ 8 ký tự trở lên!");
+            
+            showLoad(true);
+            try {
+                let res = await fetch(`${API_URL}?action=register&user=${u}&pass=${p}`);
+                let data = await res.json();
+                if (data.status === 'success') {
+                    alert("✅ TẠO TÀI KHOẢN THÀNH CÔNG!\nBấm Đăng Nhập để tiếp tục.");
+                } else {
+                    alert("❌ Lỗi: " + data.message);
+                }
+            } catch (e) { alert("Lỗi mạng!"); }
+            showLoad(false);
+        }
+
+        // Mua VIP
+        async function buyVip(days) {
+            if (currentUser === "") {
+                alert("Vui lòng đăng nhập để mua hàng!");
+                switchView('auth');
+                return;
+            }
+
+            if(!confirm(`Mua gói VIP ${days} ngày với giá ${days*10}.000đ?`)) return;
+            try {
+                // Tạm thời hiện nút loading hoặc chờ
+                let res = await fetch(`${API_URL}?action=buy&user=${currentUser}&pass=${currentPass}&days=${days}`);
+                let data = await res.json();
+                if(data.status === 'success') {
+                    currentBalance = data.new_balance;
+                    document.getElementById('menuAuthBtn').innerHTML = `👤 ${currentUser} <br> 💰 ${format(currentBalance)}đ`;
+                    prompt("✅ MUA THÀNH CÔNG! Copy mã Key của bạn ở bên dưới:", data.key);
+                } else { alert("❌ Thất bại: " + data.message); }
+            } catch (e) { alert("Lỗi mạng!"); }
+        }
+
+        // Làm mới số dư
+        async function refreshBalance() {
+            if(currentUser === "") return;
+            try {
+                let res = await fetch(`${API_URL}?action=login&user=${currentUser}&pass=${currentPass}`);
+                let data = await res.json();
+                if(data.status === 'success') {
+                    currentBalance = data.balance;
+                    document.getElementById('menuAuthBtn').innerHTML = `👤 ${currentUser} <br> 💰 ${format(currentBalance)}đ`;
+                    alert("✅ Đã cập nhật số dư mới nhất: " + format(currentBalance) + "đ");
+                }
+            } catch (e) {}
+        }
+
+        // Đăng xuất
+        function logout() { 
+            if(confirm("Bạn muốn đăng xuất?")) location.reload(); 
+        }
+    </script>
 </body>
 </html>
