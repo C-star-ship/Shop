@@ -12,11 +12,18 @@
         .hamburger { font-size: 24px; cursor: pointer; border: none; background: none; }
 
         /* Sidebar */
-        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #0b1120; color: white; z-index: 1000; transition: 0.3s; padding-top: 20px; }
+        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #0b1120; color: white; z-index: 1000; transition: 0.3s; padding-top: 15px; }
         .sidebar.active { right: 0; }
         .menu-list { list-style: none; padding: 0; }
         .menu-list a { display: block; padding: 15px 20px; color: #e2e8f0; text-decoration: none; border-bottom: 1px solid #1e293b; }
-        .btn-auth-menu { background: #1877f2; color: white; border: none; padding: 15px; width: 90%; margin: 0 5% 20px 5%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* Nút Đăng nhập lúc chưa có tài khoản */
+        .btn-auth-menu { background: #1877f2; color: white; border: none; padding: 15px; width: 90%; margin: 0 5% 15px 5%; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; }
+        
+        /* Khu vực Thẻ Tài Khoản lúc đã đăng nhập */
+        .user-info-box { background: linear-gradient(135deg, #10b981, #059669); margin: 0 15px 15px 15px; padding: 20px; border-radius: 12px; text-align: center; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .user-info-box .u-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-info-box .u-bal { font-size: 16px; color: #ecfdf5; font-weight: 500; background: rgba(0,0,0,0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; margin-top: 5px; }
 
         /* View Sections */
         .view-section { display: none; padding: 10px; }
@@ -65,6 +72,12 @@
 
     <div class="sidebar" id="sidebar">
         <button class="btn-auth-menu" id="menuAuthBtn" onclick="goAuth()">Đăng Nhập / Đăng Ký</button>
+
+        <div class="user-info-box" id="userInfoBox">
+            <div class="u-name">👤 <span id="infoUser">Khách</span></div>
+            <div class="u-bal">💰 <span id="infoBal">0</span> đ</div>
+        </div>
+
         <ul class="menu-list">
             <li><a href="#" onclick="switchView('home')">Trang chủ</a></li>
             <li><a href="#" onclick="switchView('home')">Danh sách shop</a></li>
@@ -136,7 +149,8 @@
                 </div>
                 <div class="input-group">
                     <input type="password" id="rConf" placeholder="Xác nhận mật khẩu">
-                    <span class="eye" onclick="togPass('rConf')">👁️</span> </div>
+                    <span class="eye" onclick="togPass('rConf')">👁️</span> 
+                </div>
                 <button class="btn-auth-menu" style="width:100%; margin:10px 0; background:#42b72a;" onclick="doReg()">Tạo Tài Khoản</button>
             </div>
         </div>
@@ -156,7 +170,7 @@
 
     <script>
         // ⚠️ THAY LINK /EXEC CỦA BẠN VÀO ĐÂY
-        const API = "https://script.google.com/macros/s/AKfycbxpaNFustgdJ0GC0k0jnHDbPrMXMKbOuiOpJLiZAkToMF08FwZSnG3xg7dLqlsTi0puIw/exec";
+        const API = "LINK_API_CUA_BAN_O_DAY";
         
         let user = "", pass = "", bal = 0;
 
@@ -167,7 +181,6 @@
             if(savedUser && savedPass) {
                 document.getElementById('lUser').value = savedUser;
                 document.getElementById('lPass').value = savedPass;
-                // Gọi hàm đăng nhập nhưng ẩn thông báo (isSilent = true)
                 doLogin(true); 
             }
         };
@@ -201,6 +214,21 @@
         function togPass(id) { let x = document.getElementById(id); x.type = x.type === "password" ? "text" : "password"; }
         function showLoad(s) { document.getElementById('loading').style.display = s ? 'block' : 'none'; }
 
+        // ÉP CHUẨN SỐ DƯ (Chống lỗi #NUM!)
+        function fixBal(b) {
+            let n = parseInt(b);
+            return isNaN(n) ? 0 : n;
+        }
+
+        // CẬP NHẬT GIAO DIỆN SAU KHI ĐĂNG NHẬP
+        function updateUI(u, b) {
+            document.getElementById('menuAuthBtn').style.display = 'none'; // Ẩn nút xanh dương
+            document.getElementById('userInfoBox').style.display = 'block'; // Hiện thẻ xanh lá
+            document.getElementById('infoUser').innerText = u;
+            document.getElementById('infoBal').innerText = fixBal(b).toLocaleString();
+            document.getElementById('logoutLi').style.display = 'block'; // Hiện nút Đăng xuất
+        }
+
         async function doLogin(isSilent = false) {
             let u = document.getElementById('lUser').value.trim();
             let p = document.getElementById('lPass').value;
@@ -213,15 +241,11 @@
                 let res = await fetch(`${API}?action=login&user=${u}&pass=${p}`);
                 let d = await res.json();
                 if(d.status === 'success') {
-                    user = u; pass = p; bal = d.balance;
-                    
-                    // LƯU TÀI KHOẢN VÀO BỘ NHỚ TRÌNH DUYỆT
+                    user = u; pass = p; bal = fixBal(d.balance);
                     localStorage.setItem("xw_user", u);
                     localStorage.setItem("xw_pass", p);
-
-                    document.getElementById('menuAuthBtn').innerHTML = `👤 ${u}<br>💰 ${bal.toLocaleString()}đ`;
-                    document.getElementById('menuAuthBtn').style.background = "#10b981";
-                    document.getElementById('logoutLi').style.display = 'block';
+                    
+                    updateUI(user, bal);
                     
                     if(!isSilent) {
                         alert("Đăng nhập thành công!");
@@ -229,10 +253,7 @@
                     }
                 } else {
                     if(!isSilent) alert(d.message);
-                    else { // Nếu auto-login sai mật khẩu (do đổi pass trên máy khác) -> Xóa bộ nhớ
-                        localStorage.removeItem("xw_user");
-                        localStorage.removeItem("xw_pass");
-                    }
+                    else { localStorage.removeItem("xw_user"); localStorage.removeItem("xw_pass"); }
                 }
             } catch(e) { 
                 if(!isSilent) alert("Lỗi kết nối API!"); 
@@ -253,7 +274,6 @@
                 if(d.status === 'success') { 
                     alert("Đăng ký thành công! Mời đăng nhập."); 
                     setTab('login'); 
-                    // Tự động điền tài khoản vừa tạo sang ô đăng nhập
                     document.getElementById('lUser').value = u;
                     document.getElementById('lPass').value = p;
                 } else alert(d.message);
@@ -276,8 +296,8 @@
                 let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${days}`);
                 let d = await res.json();
                 if(d.status === 'success') {
-                    bal = d.new_balance;
-                    document.getElementById('menuAuthBtn').innerHTML = `👤 ${user}<br>💰 ${bal.toLocaleString()}đ`;
+                    bal = fixBal(d.new_balance);
+                    updateUI(user, bal);
                     prompt("Mua thành công! Copy mã Key của bạn:", d.key);
                 } else alert(d.message);
             } catch(e) { alert("Lỗi giao dịch!"); }
@@ -288,15 +308,14 @@
             let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
             let d = await res.json();
             if(d.status === 'success') {
-                bal = d.balance;
-                document.getElementById('menuAuthBtn').innerHTML = `👤 ${user}<br>💰 ${bal.toLocaleString()}đ`;
+                bal = fixBal(d.balance);
+                updateUI(user, bal);
                 alert("Đã cập nhật số dư mới nhất!");
             }
         }
         
         function goAuth() { switchView('auth'); if(document.getElementById('sidebar').classList.contains('active')) toggleMenu(); }
 
-        // HÀM ĐĂNG XUẤT (XÓA BỘ NHỚ LƯU TRỮ)
         function logout() { 
             if(confirm("Bạn muốn đăng xuất?")) {
                 localStorage.removeItem("xw_user");
