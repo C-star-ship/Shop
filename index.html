@@ -17,12 +17,12 @@
         .hamburger:hover { text-shadow: 0 0 10px #00ffc3; }
 
         /* SIDEBAR (MENU TRƯỢT) */
-        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #121826; border-left: 1px solid rgba(0,255,195,0.15); z-index: 1000; transition: 0.3s ease; padding: 25px 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #121826; border-left: 1px solid rgba(0,255,195,0.15); z-index: 1000; transition: 0.3s ease; padding: 25px 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow-y: auto;}
         .sidebar.active { right: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; display: none; opacity: 0; transition: 0.3s; backdrop-filter: blur(2px); }
         .overlay.active { display: block; opacity: 1; }
         
-        .close-btn { color: #94a3b8; font-size: 24px; text-align: right; cursor: pointer; margin-bottom: 20px; }
+        .close-btn { color: #94a3b8; font-size: 24px; text-align: right; cursor: pointer; margin-bottom: 10px; }
         .menu-btn { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 600; font-size: 15px; width: 100%; text-align: left; margin-bottom: 12px; }
         .menu-btn:hover { border-color: #00ffc3; color: #00ffc3; background: rgba(0, 255, 195, 0.05); }
 
@@ -88,19 +88,25 @@
         <div class="close-btn" onclick="toggleMenu()">✖</div>
         
         <div id="side-auth">
-            <button class="menu-btn" onclick="v('auth')" style="text-align:center; border-color:#00ffc3; color:#00ffc3;">🔐 Đăng Nhập / Đăng Ký</button>
+            <button class="menu-btn" onclick="v('auth')" style="text-align:center; border-color:#00ffc3; color:#00ffc3; margin-bottom: 20px;">🔐 Đăng Nhập / Đăng Ký</button>
         </div>
         
-        <div id="side-user" style="display:none; flex-direction:column;">
-            <div style="background:#0b0f19; padding:15px; border-radius:8px; text-align:center; border:1px solid #334155; margin-bottom:20px;">
+        <div id="side-user" style="display:none; flex-direction:column; margin-bottom: 15px;">
+            <div style="background:#0b0f19; padding:15px; border-radius:8px; text-align:center; border:1px solid #334155;">
                 <div style="color:#94a3b8; font-size:12px; text-transform:uppercase;">Số dư tài khoản</div>
                 <div id="uBal" style="color:#00ffc3; font-weight:800; font-size:22px; margin-top:5px;">0 ₫</div>
             </div>
-            <button class="menu-btn" onclick="v('deposit')">💳 Nạp tiền vào Tài khoản</button>
-            <button class="menu-btn" onclick="v('history')">🔑 Quản lý Key VIP</button>
-            <div style="margin-top:auto;">
-                <button class="menu-btn" onclick="logout()" style="color:#ef4444; border-color:rgba(239,68,68,0.3); text-align:center;">🚪 Đăng xuất</button>
-            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+            <button class="menu-btn" onclick="v('home')">🏠 Trang chủ</button>
+            <button class="menu-btn" id="menu-deposit" style="display:none;" onclick="v('deposit')">💳 Nạp tiền vào Tài khoản</button>
+            <button class="menu-btn" id="menu-history" style="display:none;" onclick="v('history')">📋 Lịch sử mua trên shop</button>
+            <button class="menu-btn" onclick="contactAdmin()">🎧 Liên hệ Admin</button>
+        </div>
+
+        <div id="side-logout" style="display:none; margin-top:auto;">
+            <button class="menu-btn" onclick="logout()" style="color:#ef4444; border-color:rgba(239,68,68,0.3); text-align:center; margin-top: 20px;">🚪 Đăng xuất</button>
         </div>
     </div>
 
@@ -181,7 +187,7 @@
 
         <div id="v-history" class="view">
             <div class="card">
-                <h2 class="title">LỊCH SỬ KEY CỦA TÔI</h2>
+                <h2 class="title">LỊCH SỬ MUA TRÊN SHOP</h2>
                 <div id="histLoad" style="color:#00ffc3; text-align:center; padding:20px; font-style:italic;">Đang tải dữ liệu từ máy chủ...</div>
                 
                 <div class="table-wrapper">
@@ -218,7 +224,7 @@
     </div>
 
     <script>
-        // LINK API CỦA BẠN ĐÃ ĐƯỢC CHÈN SẴN
+        // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY NHÉ
         const API = "https://script.google.com/macros/s/AKfycbxvSkK0slmP5VcE62d1R5lgB9npW6Y7WlGls0lvqmQINMlp4yLLTrUaSxhkfj2XLcYg8w/exec";
 
         let user = localStorage.getItem("shop_u") || "";
@@ -240,6 +246,18 @@
 
         // Auto login khi mở web
         window.onload = () => { if(user && pass) doLogin(true); };
+
+        // Liên hệ Admin
+        function contactAdmin() {
+            toggleMenu(); // Đóng menu lại
+            
+            // ⚠️ Thay Link Zalo / Facebook của bạn vào dòng dưới:
+            let adminLink = "https://zalo.me/0123456789"; 
+            
+            if(confirm("Hệ thống sẽ chuyển hướng đến trang liên hệ Admin (Zalo/Facebook). Tiếp tục?")) {
+                window.open(adminLink, '_blank');
+            }
+        }
 
         // Điều hướng các trang
         function v(id) {
@@ -276,10 +294,15 @@
             x.type = x.type === "password" ? "text" : "password";
         }
 
-        // Cập nhật UI Menu
+        // Cập nhật UI Menu Sidebar
         function setUI(u, b) {
             document.getElementById("side-auth").style.display = "none";
+            
             document.getElementById("side-user").style.display = "flex";
+            document.getElementById("menu-deposit").style.display = "block";
+            document.getElementById("menu-history").style.display = "block";
+            document.getElementById("side-logout").style.display = "block";
+            
             document.getElementById("uBal").innerText = Number(b).toLocaleString() + " ₫";
         }
 
@@ -350,117 +373,4 @@
                 let d = await res.json();
 
                 if (d.status === "success") {
-                    alert("✅ Đăng ký thành công! Hệ thống sẽ tự động đăng nhập.");
-                    document.getElementById("lUser").value = u;
-                    document.getElementById("lPass").value = p;
-                    doLogin();
-                } else {
-                    alert("❌ Lỗi: " + d.message);
-                }
-            } catch (e) {
-                alert("❌ Lỗi kết nối đến máy chủ.");
-            }
-
-            btnReg.disabled = false;
-            btnReg.innerText = "Tạo Tài Khoản";
-        }
-
-        // Xử lý Mua Key
-        async function buy() {
-            let d = parseInt(document.getElementById("days").value);
-            if (!d || d <= 0) return alert("⚠️ Vui lòng nhập số ngày hợp lệ!");
-            if (!user) { alert("⚠️ Vui lòng đăng nhập trước khi mua!"); return v("auth"); }
-
-            let btnBuy = document.getElementById("btnBuy");
-            btnBuy.disabled = true;
-            btnBuy.innerText = "⏳ Đang tạo Key...";
-
-            try {
-                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${d}`);
-                let r = await res.json();
-
-                if (r.status === "success") {
-                    bal = r.new_balance;
-                    setUI(user, bal);
-                    alert("✅ Mua Key thành công! Vui lòng vào mục Lịch sử để Copy Key.");
-                    document.getElementById("days").value = "";
-                    calcPrice();
-                    v("history");
-                } else {
-                    alert("❌ Lỗi: " + r.message);
-                }
-            } catch (e) {
-                alert("❌ Lỗi mạng. Vui lòng thử lại sau!");
-            }
-
-            btnBuy.disabled = false;
-            btnBuy.innerText = "💳 Xác Nhận Mua";
-        }
-
-        // Xử lý Tải Lịch sử
-        async function loadHist() {
-            if (!user) return;
-            document.getElementById("histLoad").style.display = "block";
-            document.getElementById("histBody").innerHTML = "";
-
-            try {
-                let res = await fetch(`${API}?action=history&user=${user}&pass=${pass}`);
-                let r = await res.json();
-                let h = "";
-
-                if (r.status === "success") {
-                    if(r.data.length === 0) {
-                        h = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Bạn chưa mua Key nào.</td></tr>`;
-                    } else {
-                        r.data.forEach(k => {
-                            let statusStyle = k.status === 'banned' ? 'background:rgba(239,68,68,0.1); color:#ef4444;' : '';
-                            h += `
-                            <tr>
-                                <td style="font-family:monospace; color:#38bdf8; font-size:15px; font-weight:bold;">${k.key}</td>
-                                <td style="color:#cbd5e1;">${new Date(k.expire).toLocaleDateString('vi-VN')}</td>
-                                <td><span class="badge" style="${statusStyle}">${k.status}</span></td>
-                                <td><button class="copy-btn" onclick="copyText('${k.key}')">📋 Copy</button></td>
-                            </tr>`;
-                        });
-                    }
-                    document.getElementById("histBody").innerHTML = h;
-                }
-            } catch(e) {}
-            
-            document.getElementById("histLoad").style.display = "none";
-        }
-
-        // Xử lý Cập nhật tiền
-        async function refreshBal() {
-            let btnRef = document.getElementById("btnRef");
-            btnRef.disabled = true;
-            btnRef.innerText = "⏳ Đang kiểm tra...";
-
-            try {
-                let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
-                let d = await res.json();
-                if (d.status === "success") {
-                    bal = d.balance;
-                    setUI(user, bal);
-                    alert("✅ Cập nhật số dư thành công!");
-                }
-            } catch(e) { alert("❌ Lỗi kết nối!"); }
-
-            btnRef.disabled = false;
-            btnRef.innerText = "🔄 Đã chuyển khoản? Bấm cập nhật số dư";
-        }
-
-        // Tiện ích Copy
-        function copyText(text) {
-            navigator.clipboard.writeText(text);
-            alert("✅ Đã copy Key vào bộ nhớ tạm: " + text);
-        }
-
-        // Đăng xuất
-        function logout() {
-            localStorage.clear();
-            location.reload();
-        }
-    </script>
-</body>
-</html>
+                  
