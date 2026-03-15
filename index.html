@@ -3,175 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XWorld Shop - Mua Key Tự Động</title>
+    <title>XWorld Shop - Đăng nhập / Đăng ký</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; max-width: 400px; width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
-        h2 { text-align: center; color: #1877f2; margin-top: 0; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background-color: #1877f2; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        button:hover { background-color: #166fe5; }
-        .btn-secondary { background-color: #42b72a; }
-        .btn-secondary:hover { background-color: #36a420; }
-        .btn-logout { background-color: #dc3545; margin-top: 20px; }
-        .btn-logout:hover { background-color: #c82333; }
-        .hidden { display: none; }
-        .balance-box { background: #e7f3ff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; border: 1px solid #1877f2; }
-        .balance-box span { font-size: 24px; font-weight: bold; color: #1877f2; }
-        .package { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .package-info h4 { margin: 0 0 5px 0; }
-        .package-info p { margin: 0; color: #666; font-size: 14px; }
-        .btn-buy { width: auto; padding: 8px 15px; margin: 0; }
-        .deposit-info { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; border: 1px solid #ffeeba; }
-        .deposit-info strong { color: #856404; }
-        #loading { text-align: center; color: #666; font-style: italic; margin-top: 10px; height: 20px; }
+        /* CSS Tổng thể - Giống với ảnh gốc image_10.png */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container chính của shop */
+        .shop-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 360px; /* Chiều rộng giống trên điện thoại */
+            text-align: center;
+        }
+
+        /* Tiêu đề */
+        .shop-header {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1877f2;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Thanh chuyển đổi (Tab bar) */
+        .tab-bar {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.3s, border-bottom 0.3s;
+        }
+
+        .tab-button.active {
+            color: #1877f2;
+            border-bottom: 2px solid #1877f2;
+        }
+
+        /* Khu vực chứa các biểu mẫu */
+        .forms-container {
+            display: flex;
+            width: 200%; /* Chứa 2 form side-by-side */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .form {
+            width: 50%; /* Mỗi form chiếm 1/2 chiều rộng container forms */
+            padding-right: 5px; /* Thêm chút khoảng cách giữa form */
+            box-sizing: border-box;
+        }
+
+        /* Các trường nhập liệu */
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box; /* Quan trọng để padding không làm input to ra */
+        }
+
+        /* Các trường mật khẩu cần padding-right cho con mắt */
+        .password-input input {
+            padding-right: 45px;
+        }
+
+        /* Biểu tượng con mắt */
+        .eye-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Các nút bấm */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login {
+            background-color: #1877f2;
+        }
+
+        .btn-login:hover {
+            background-color: #166fe5;
+        }
+
+        .btn-register {
+            background-color: #42b72a;
+        }
+
+        .btn-register:hover {
+            background-color: #36a420;
+        }
+
+        /* Phần ngăn cách "Hoặc" */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #888;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .divider-text {
+            padding: 0 10px;
+            font-size: 14px;
+        }
+
+        /* Nút Đăng nhập bằng Google */
+        .btn-google {
+            background-color: white;
+            color: #555;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .btn-google:hover {
+            background-color: #f7f7f7;
+            border-color: #ccc;
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Các trạng thái ẩn/hiện */
+        .hidden {
+            display: none;
+        }
+
+        .show-register-form {
+            transform: translateX(-50%); /* Chuyển sang form Đăng ký */
+        }
+        
+        .no-animation {
+            transition: none !important;
+        }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="auth-screen">
-        <h2>🔒 XWorld Shop</h2>
-        <input type="text" id="username" placeholder="Tên tài khoản">
-        <input type="password" id="password" placeholder="Mật khẩu">
-        <div id="loading" class="hidden">⏳ Đang xử lý...</div>
-        <button onclick="login()">Đăng Nhập</button>
-        <button class="btn-secondary" onclick="register()">Tạo Tài Khoản Mới</button>
+    <div class="shop-container">
+        <div class="shop-header">
+            <span>🔒 XWorld Shop</span>
+        </div>
+
+        <div class="tab-bar">
+            <button class="tab-button active" onclick="showForm('login')">Đăng nhập</button>
+            <button class="tab-button" onclick="showForm('register')">Đăng ký</button>
+        </div>
+
+        <div class="forms-container" id="formsContainer">
+            <form class="form" id="loginForm">
+                <div class="input-group">
+                    <input type="text" placeholder="Tên tài khoản" required>
+                </div>
+                <div class="input-group password-input">
+                    <input type="password" id="loginPass" placeholder="Mật khẩu" required>
+                    <span class="eye-icon" id="eyeLogin" onclick="togglePassword('loginPass', 'eyeLogin')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </span>
+                </div>
+                <button type="submit" class="btn btn-login">Đăng nhập</button>
+            </form>
+
+            <form class="form hidden" id="registerForm">
+                <div class="input-group">
+                    <input type="text" placeholder="Tên tài khoản mới" required>
+                </div>
+                <div class="input-group password-input">
+                    <input type="password" id="regPass" placeholder="Mật khẩu mới" required>
+                    <span class="eye-icon" id="eyeReg" onclick="togglePassword('regPass', 'eyeReg')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </span>
+                </div>
+                <div class="input-group password-input">
+                    <input type="password" id="confirmPass" placeholder="Xác nhận mật khẩu" required>
+                    <span class="eye-icon" id="eyeConfirm" onclick="togglePassword('confirmPass', 'eyeConfirm')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </span>
+                </div>
+                <button type="submit" class="btn btn-register">Tạo Tài Khoản Mới</button>
+            </form>
+        </div>
+
+        <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-text">Hoặc</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <button class="btn btn-google">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google icon" class="google-icon">
+            Tiếp tục với Google
+        </button>
+
     </div>
 
-    <div id="shop-screen" class="hidden">
-        <h2>🛒 Cửa Hàng VIP</h2>
-        <div class="balance-box">
-            Xin chào, <b id="display-user">Admin</b><br>
-            Số dư: <span id="display-balance">0</span> VNĐ
-            <button style="width: auto; padding: 5px 10px; font-size: 12px; margin-left: 10px;" onclick="refreshBalance()">🔄 Làm mới</button>
-        </div>
+    <script>
+        // Hàm chuyển đổi giữa biểu mẫu Đăng nhập và Đăng ký
+        function showForm(type) {
+            const formsContainer = document.getElementById('formsContainer');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabButtons = document.querySelectorAll('.tab-button');
 
-        <div class="package">
-            <div class="package-info">
-                <h4>Gói VIP 1 Ngày</h4>
-                <p>Giá: 10.000đ</p>
-            </div>
-            <button class="btn-buy" onclick="buyVip(1)">Mua Ngay</button>
-        </div>
-        
-        <div class="package">
-            <div class="package-info">
-                <h4>Gói VIP 7 Ngày</h4>
-                <p>Giá: 70.000đ</p>
-            </div>
-            <button class="btn-buy btn-secondary" onclick="buyVip(7)">Mua Ngay</button>
-        </div>
+            if (type === 'login') {
+                // Hiện form Đăng nhập, ẩn form Đăng ký
+                formsContainer.classList.remove('show-register-form');
+                loginForm.classList.remove('hidden');
+                
+                // Thêm độ trễ nhỏ để ẩn form kia, tránh flash
+                setTimeout(() => {
+                    if (!formsContainer.classList.contains('show-register-form')) {
+                        registerForm.classList.add('hidden');
+                    }
+                }, 100);
 
-        <div class="package">
-            <div class="package-info">
-                <h4>Gói VIP 30 Ngày</h4>
-                <p>Giá: 300.000đ</p>
-            </div>
-            <button class="btn-buy" style="background-color: #8e44ad;" onclick="buyVip(30)">Mua Ngay</button>
-        </div>
-
-        <div class="deposit-info">
-            <strong>💳 HƯỚNG DẪN NẠP TIỀN TỰ ĐỘNG</strong><br>
-            Ngân hàng: MBBank<br>
-            STK: 0364675622<br>
-            Chủ thẻ: CAO DUY CUONG<br><br>
-            Nội dung chuyển khoản (Bắt buộc):<br>
-            <strong style="font-size: 18px; color: red;">NAP <span id="deposit-syntax"></span></strong><br>
-            <i>(Chuyển xong bấm nút "Làm mới" ở trên để nhận tiền)</i>
-        </div>
-
-        <button class="btn-logout" onclick="logout()">Thoát</button>
-    </div>
-</div>
-
-<script>
-    // ⚠️ DÁN LINK API MỚI NHẤT CỦA BẠN VÀO ĐÂY (Giữ nguyên trong dấu ngoặc kép)
-    const API_URL = "https://script.google.com/macros/s/AKfycbybfQwGnSaEPZaDJi6zQKViHaLYxuBmDqST6_1ys3upllAzxPc2unmfY5YhB0Z4YJ4NBw/exec";
-    
-    let currentUser = "";
-    let currentPass = "";
-
-    function showLoading(show) {
-        document.getElementById('loading').style.display = show ? 'block' : 'none';
-    }
-
-    function formatMoney(amount) {
-        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    async function login() {
-        let u = document.getElementById('username').value;
-        let p = document.getElementById('password').value;
-        if(!u || !p) return alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
-        
-        showLoading(true);
-        try {
-            let res = await fetch(`${API_URL}?action=login&user=${u}&pass=${p}`);
-            let data = await res.json();
-            if(data.status === 'success') {
-                currentUser = u;
-                currentPass = p;
-                document.getElementById('display-user').innerText = u;
-                document.getElementById('deposit-syntax').innerText = u;
-                document.getElementById('display-balance').innerText = formatMoney(data.balance);
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('shop-screen').classList.remove('hidden');
+                // Cập nhật tab active
+                tabButtons[0].classList.add('active');
+                tabButtons[1].classList.remove('active');
             } else {
-                alert("❌ Lỗi: " + data.message);
+                // Hiện form Đăng ký, ẩn form Đăng nhập
+                formsContainer.classList.add('show-register-form');
+                registerForm.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    if (formsContainer.classList.contains('show-register-form')) {
+                        loginForm.classList.add('hidden');
+                    }
+                }, 100);
+
+                // Cập nhật tab active
+                tabButtons[0].classList.remove('active');
+                tabButtons[1].classList.add('active');
             }
-        } catch (e) { alert("Lỗi kết nối mạng!"); }
-        showLoading(false);
-    }
+        }
 
-    async function register() {
-        let u = document.getElementById('username').value;
-        let p = document.getElementById('password').value;
-        if(!u || !p) return alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
-        
-        showLoading(true);
-        try {
-            let res = await fetch(`${API_URL}?action=register&user=${u}&pass=${p}`);
-            let data = await res.json();
-            alert(data.status === 'success' ? "✅ Đăng ký thành công! Hãy bấm Đăng nhập." : "❌ Lỗi: " + data.message);
-        } catch (e) { alert("Lỗi kết nối mạng!"); }
-        showLoading(false);
-    }
+        // Hàm hiện/ẩn mật khẩu và đổi biểu tượng con mắt
+        function togglePassword(inputId, eyeId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIconSpan = document.getElementById(eyeId);
 
-    async function refreshBalance() {
-        try {
-            let res = await fetch(`${API_URL}?action=login&user=${currentUser}&pass=${currentPass}`);
-            let data = await res.json();
-            if(data.status === 'success') {
-                document.getElementById('display-balance').innerText = formatMoney(data.balance);
-                alert("✅ Đã cập nhật số dư mới nhất!");
-            }
-        } catch (e) { alert("Lỗi mạng!"); }
-    }
+            // Các SVG cho con mắt
+            const eyeOpenSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+            const eyeClosedSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
-    async function buyVip(days) {
-        if(!confirm(`Bạn có chắc muốn mua gói VIP ${days} ngày?`)) return;
-        
-        try {
-            let res = await fetch(`${API_URL}?action=buy&user=${currentUser}&pass=${currentPass}&days=${days}`);
-            let data = await res.json();
-            if(data.status === 'success') {
-                document.getElementById('display-balance').innerText = formatMoney(data.new_balance);
-                prompt("✅ MUA THÀNH CÔNG! Copy mã Key của bạn ở bên dưới:", data.key);
+            if (passwordInput.type === "password") {
+                // Đổi sang hiện mật khẩu
+                passwordInput.type = "text";
+                eyeIconSpan.innerHTML = eyeClosedSvg;
+                eyeIconSpan.style.color = "#1877f2"; // Đổi màu khi đang hiện
             } else {
-                alert("❌ Thất bại: " + data.message);
+                // Đổi sang ẩn mật khẩu
+                passwordInput.type = "password";
+                eyeIconSpan.innerHTML = eyeOpenSvg;
+                eyeIconSpan.style.color = "#aaa"; // Màu xám mặc định
             }
-        } catch (e) { alert("Lỗi mạng!"); }
-    }
-
-    function logout() {
-        currentUser = ""; currentPass = "";
-        document.getElementById('username').value = "";
-        document.getElementById('password').value = "";
-        document.getElementById('auth-screen').classList.remove('hidden');
-        document.getElementById('shop-screen').classList.add('hidden');
-    }
-</script>
+        }
+        
+        // Ngăn chặn chuyển form flash khi tải trang
+        window.onload = function() {
+            const formsContainer = document.getElementById('formsContainer');
+            formsContainer.classList.add('no-animation');
+            
+            showForm('login'); // Mặc định hiện form đăng nhập
+            
+            // Bỏ no-animation sau khi tải xong
+            setTimeout(() => {
+                formsContainer.classList.remove('no-animation');
+            }, 50);
+        };
+    </script>
 
 </body>
 </html>
