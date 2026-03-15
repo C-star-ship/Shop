@@ -17,10 +17,10 @@
         .menu-list { list-style: none; padding: 0; }
         .menu-list a { display: block; padding: 15px 20px; color: #e2e8f0; text-decoration: none; border-bottom: 1px solid #1e293b; }
         
-        /* Nút Đăng nhập lúc chưa có tài khoản */
-        .btn-auth-menu { background: #1877f2; color: white; border: none; padding: 15px; width: 90%; margin: 0 5% 15px 5%; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; }
+        .btn-auth-menu { background: #1877f2; color: white; border: none; padding: 15px; width: 90%; margin: 0 5% 15px 5%; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; transition: 0.3s; }
+        .btn-auth-menu:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* Khu vực Thẻ Tài Khoản lúc đã đăng nhập */
+        /* Khu vực Thẻ Tài Khoản */
         .user-info-box { background: linear-gradient(135deg, #10b981, #059669); margin: 0 15px 15px 15px; padding: 20px; border-radius: 12px; text-align: center; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
         .user-info-box .u-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-info-box .u-bal { font-size: 16px; color: #ecfdf5; font-weight: 500; background: rgba(0,0,0,0.15); display: inline-block; padding: 5px 15px; border-radius: 20px; margin-top: 5px; }
@@ -36,7 +36,8 @@
         .product-info { padding: 15px; }
         .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         .price { color: #ea580c; font-size: 22px; font-weight: bold; border-bottom: 2px solid #ea580c; }
-        .btn-buy { width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; font-weight: bold; cursor: pointer; }
+        .btn-buy { width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-buy:disabled { background: #64748b; cursor: not-allowed; }
 
         /* Auth Box */
         .auth-container { background: white; padding: 25px; border-radius: 12px; max-width: 400px; margin: 20px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -58,7 +59,6 @@
         
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
         .overlay.active { display: block; }
-        #loading { text-align: center; color: #1877f2; font-weight: bold; margin-bottom: 15px; display: none; }
     </style>
 </head>
 <body>
@@ -100,7 +100,7 @@
                         <span style="color:#94a3b8; text-decoration:line-through;">20.000đ</span>
                         <span class="price">10.000đ</span>
                     </div>
-                    <button class="btn-buy" onclick="buy(1)">🛒 Mua Ngay</button>
+                    <button class="btn-buy" id="btnBuy1" onclick="buy(1, 'btnBuy1')">🛒 Mua Ngay</button>
                 </div>
             </div>
             <div class="product-card">
@@ -112,7 +112,7 @@
                         <span style="color:#94a3b8; text-decoration:line-through;">100.000đ</span>
                         <span class="price">70.000đ</span>
                     </div>
-                    <button class="btn-buy" onclick="buy(7)">🛒 Mua Ngay</button>
+                    <button class="btn-buy" id="btnBuy7" onclick="buy(7, 'btnBuy7')">🛒 Mua Ngay</button>
                 </div>
             </div>
         </div>
@@ -126,8 +126,6 @@
                 <button class="tab-btn" id="tabReg" onclick="setTab('register')">Đăng ký</button>
             </div>
 
-            <div id="loading">⏳ Đang kết nối máy chủ...</div>
-
             <div id="form-login" class="form-auth active">
                 <div class="input-group">
                     <input type="text" id="lUser" placeholder="Tên tài khoản">
@@ -136,7 +134,7 @@
                     <input type="password" id="lPass" placeholder="Mật khẩu">
                     <span class="eye" onclick="togPass('lPass')">👁️</span>
                 </div>
-                <button class="btn-auth-menu" style="width:100%; margin:10px 0;" onclick="doLogin()">Đăng Nhập</button>
+                <button class="btn-auth-menu" id="btnLogin" style="width:100%; margin:10px 0;" onclick="doLogin()">Đăng Nhập</button>
             </div>
 
             <div id="form-register" class="form-auth">
@@ -151,7 +149,7 @@
                     <input type="password" id="rConf" placeholder="Xác nhận mật khẩu">
                     <span class="eye" onclick="togPass('rConf')">👁️</span> 
                 </div>
-                <button class="btn-auth-menu" style="width:100%; margin:10px 0; background:#42b72a;" onclick="doReg()">Tạo Tài Khoản</button>
+                <button class="btn-auth-menu" id="btnReg" style="width:100%; margin:10px 0; background:#42b72a;" onclick="doReg()">Tạo Tài Khoản</button>
             </div>
         </div>
     </div>
@@ -164,17 +162,17 @@
                 <img id="qrImg" src="" style="width:220px; display:block;">
             </div>
             <p>Nội dung: <span class="syntax" id="memoText"></span></p>
-            <button class="btn-auth-menu" style="width:auto; padding:10px 25px;" onclick="refresh()">🔄 Cập nhật số dư</button>
+            <button class="btn-auth-menu" id="btnRefresh" style="width:auto; padding:10px 25px;" onclick="refresh()">🔄 Cập nhật số dư</button>
         </div>
     </div>
 
     <script>
         // ⚠️ THAY LINK /EXEC CỦA BẠN VÀO ĐÂY
-        const API = "https://script.google.com/macros/s/AKfycbyWP3_VLCSDkgdKGIgBxJbAIooM7k1IJ0xHE3o9Co1Bpbq0CETTIHEHO9ZuV8xlhf3M/exec";
+        const API = "LINK_API_CUA_BAN_O_DAY";
         
         let user = "", pass = "", bal = 0;
+        let isBusy = false; // Biến khóa toàn cục chống Spam Click
 
-        // TỰ ĐỘNG ĐĂNG NHẬP KHI MỞ WEB
         window.onload = function() {
             let savedUser = localStorage.getItem("xw_user");
             let savedPass = localStorage.getItem("xw_pass");
@@ -194,6 +192,7 @@
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
             if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
+            window.scrollTo(0, 0);
         }
 
         function setTab(t) {
@@ -212,73 +211,86 @@
         }
 
         function togPass(id) { let x = document.getElementById(id); x.type = x.type === "password" ? "text" : "password"; }
-        function showLoad(s) { document.getElementById('loading').style.display = s ? 'block' : 'none'; }
+        function fixBal(b) { let n = parseInt(b); return isNaN(n) ? 0 : n; }
 
-        // ÉP CHUẨN SỐ DƯ (Chống lỗi #NUM!)
-        function fixBal(b) {
-            let n = parseInt(b);
-            return isNaN(n) ? 0 : n;
+        // HÀM XỬ LÝ NÚT BẤM (Hiệu ứng Loading + Chống Spam)
+        function setBtnLoading(btnId, isLoading, loadingText = "⏳ Đang xử lý...") {
+            let btn = document.getElementById(btnId);
+            if(!btn) return;
+            if(isLoading) {
+                btn.disabled = true;
+                btn.dataset.originalText = btn.innerText;
+                btn.innerText = loadingText;
+            } else {
+                // Thêm thời gian delay 1.5 giây sau khi xong mới cho bấm tiếp
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = btn.dataset.originalText;
+                    isBusy = false; // Mở khóa hệ thống
+                }, 1500); 
+            }
         }
 
-        // CẬP NHẬT GIAO DIỆN SAU KHI ĐĂNG NHẬP
         function updateUI(u, b) {
-            document.getElementById('menuAuthBtn').style.display = 'none'; // Ẩn nút xanh dương
-            document.getElementById('userInfoBox').style.display = 'block'; // Hiện thẻ xanh lá
+            document.getElementById('menuAuthBtn').style.display = 'none'; 
+            document.getElementById('userInfoBox').style.display = 'block'; 
             document.getElementById('infoUser').innerText = u;
             document.getElementById('infoBal').innerText = fixBal(b).toLocaleString();
-            document.getElementById('logoutLi').style.display = 'block'; // Hiện nút Đăng xuất
+            document.getElementById('logoutLi').style.display = 'block'; 
         }
 
         async function doLogin(isSilent = false) {
+            if(isBusy && !isSilent) return; // Đang bận thì không làm gì cả
+            
             let u = document.getElementById('lUser').value.trim();
             let p = document.getElementById('lPass').value;
             if(!u || !p) {
                 if(!isSilent) alert("Nhập đủ thông tin!");
                 return;
             }
-            if(!isSilent) showLoad(true);
+            
+            if(!isSilent) { isBusy = true; setBtnLoading('btnLogin', true, "⏳ Đang đăng nhập..."); }
+            
             try {
                 let res = await fetch(`${API}?action=login&user=${u}&pass=${p}`);
                 let d = await res.json();
                 if(d.status === 'success') {
                     user = u; pass = p; bal = fixBal(d.balance);
-                    localStorage.setItem("xw_user", u);
-                    localStorage.setItem("xw_pass", p);
-                    
+                    localStorage.setItem("xw_user", u); localStorage.setItem("xw_pass", p);
                     updateUI(user, bal);
-                    
-                    if(!isSilent) {
-                        alert("Đăng nhập thành công!");
-                        switchView('home');
-                    }
+                    if(!isSilent) { alert("Đăng nhập thành công!"); switchView('home'); }
                 } else {
                     if(!isSilent) alert(d.message);
                     else { localStorage.removeItem("xw_user"); localStorage.removeItem("xw_pass"); }
                 }
             } catch(e) { 
-                if(!isSilent) alert("Lỗi kết nối API!"); 
+                if(!isSilent) alert("Lỗi kết nối máy chủ!"); 
             }
-            if(!isSilent) showLoad(false);
+            
+            if(!isSilent) setBtnLoading('btnLogin', false);
         }
 
         async function doReg() {
+            if(isBusy) return;
             let u = document.getElementById('rUser').value.trim();
             let p = document.getElementById('rPass').value;
             let c = document.getElementById('rConf').value;
             if(p.length < 8 || !/[0-9]/.test(p) || !/[a-zA-Z]/.test(p)) return alert("Mật khẩu cần 8+ ký tự, gồm cả chữ và số!");
             if(p !== c) return alert("Mật khẩu xác nhận không khớp!");
-            showLoad(true);
+            
+            isBusy = true; setBtnLoading('btnReg', true, "⏳ Đang tạo tài khoản...");
+            
             try {
                 let res = await fetch(`${API}?action=register&user=${u}&pass=${p}`);
                 let d = await res.json();
                 if(d.status === 'success') { 
                     alert("Đăng ký thành công! Mời đăng nhập."); 
                     setTab('login'); 
-                    document.getElementById('lUser').value = u;
-                    document.getElementById('lPass').value = p;
+                    document.getElementById('lUser').value = u; document.getElementById('lPass').value = p;
                 } else alert(d.message);
-            } catch(e) { alert("Lỗi kết nối!"); }
-            showLoad(false);
+            } catch(e) { alert("Lỗi kết nối máy chủ!"); }
+            
+            setBtnLoading('btnReg', false);
         }
 
         function goDeposit() {
@@ -289,37 +301,49 @@
             switchView('deposit');
         }
 
-        async function buy(days) {
+        async function buy(days, btnId) {
             if(!user) { alert("Hãy đăng nhập!"); return goAuth(); }
-            if(!confirm(`Mua gói ${days} ngày?`)) return;
+            if(isBusy) return;
+            
+            if(!confirm(`Mua gói VIP ${days} ngày với giá ${days*10}.000đ?`)) return;
+            
+            isBusy = true; setBtnLoading(btnId, true, "⏳ Đang xử lý...");
+            
             try {
                 let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${days}`);
                 let d = await res.json();
                 if(d.status === 'success') {
                     bal = fixBal(d.new_balance);
                     updateUI(user, bal);
-                    prompt("Mua thành công! Copy mã Key của bạn:", d.key);
-                } else alert(d.message);
+                    prompt("✅ Mua thành công! Copy mã Key của bạn:", d.key);
+                } else alert("❌ Lỗi: " + d.message);
             } catch(e) { alert("Lỗi giao dịch!"); }
+            
+            setBtnLoading(btnId, false);
         }
 
         async function refresh() {
-            if(!user) return;
-            let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
-            let d = await res.json();
-            if(d.status === 'success') {
-                bal = fixBal(d.balance);
-                updateUI(user, bal);
-                alert("Đã cập nhật số dư mới nhất!");
-            }
+            if(!user || isBusy) return;
+            isBusy = true; setBtnLoading('btnRefresh', true, "⏳ Đang tải...");
+            
+            try {
+                let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
+                let d = await res.json();
+                if(d.status === 'success') {
+                    bal = fixBal(d.balance);
+                    updateUI(user, bal);
+                    alert("✅ Đã cập nhật số dư mới nhất!");
+                }
+            } catch(e) { alert("Lỗi kết nối!"); }
+            
+            setBtnLoading('btnRefresh', false);
         }
         
         function goAuth() { switchView('auth'); if(document.getElementById('sidebar').classList.contains('active')) toggleMenu(); }
 
         function logout() { 
             if(confirm("Bạn muốn đăng xuất?")) {
-                localStorage.removeItem("xw_user");
-                localStorage.removeItem("xw_pass");
+                localStorage.removeItem("xw_user"); localStorage.removeItem("xw_pass");
                 location.reload(); 
             }
         }
