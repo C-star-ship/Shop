@@ -373,4 +373,117 @@
                 let d = await res.json();
 
                 if (d.status === "success") {
-                  
+                    alert("✅ Đăng ký thành công! Hệ thống sẽ tự động đăng nhập.");
+                    document.getElementById("lUser").value = u;
+                    document.getElementById("lPass").value = p;
+                    doLogin();
+                } else {
+                    alert("❌ Lỗi: " + d.message);
+                }
+            } catch (e) {
+                alert("❌ Lỗi kết nối đến máy chủ.");
+            }
+
+            btnReg.disabled = false;
+            btnReg.innerText = "Tạo Tài Khoản";
+        }
+
+        // Xử lý Mua Key
+        async function buy() {
+            let d = parseInt(document.getElementById("days").value);
+            if (!d || d <= 0) return alert("⚠️ Vui lòng nhập số ngày hợp lệ!");
+            if (!user) { alert("⚠️ Vui lòng đăng nhập trước khi mua!"); return v("auth"); }
+
+            let btnBuy = document.getElementById("btnBuy");
+            btnBuy.disabled = true;
+            btnBuy.innerText = "⏳ Đang tạo Key...";
+
+            try {
+                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${d}`);
+                let r = await res.json();
+
+                if (r.status === "success") {
+                    bal = r.new_balance;
+                    setUI(user, bal);
+                    alert("✅ Mua Key thành công! Vui lòng vào mục Lịch sử để Copy Key.");
+                    document.getElementById("days").value = "";
+                    calcPrice();
+                    v("history");
+                } else {
+                    alert("❌ Lỗi: " + r.message);
+                }
+            } catch (e) {
+                alert("❌ Lỗi mạng. Vui lòng thử lại sau!");
+            }
+
+            btnBuy.disabled = false;
+            btnBuy.innerText = "💳 Xác Nhận Mua";
+        }
+
+        // Xử lý Tải Lịch sử
+        async function loadHist() {
+            if (!user) return;
+            document.getElementById("histLoad").style.display = "block";
+            document.getElementById("histBody").innerHTML = "";
+
+            try {
+                let res = await fetch(`${API}?action=history&user=${user}&pass=${pass}`);
+                let r = await res.json();
+                let h = "";
+
+                if (r.status === "success") {
+                    if(r.data.length === 0) {
+                        h = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Bạn chưa mua Key nào.</td></tr>`;
+                    } else {
+                        r.data.forEach(k => {
+                            let statusStyle = k.status === 'banned' ? 'background:rgba(239,68,68,0.1); color:#ef4444;' : '';
+                            h += `
+                            <tr>
+                                <td style="font-family:monospace; color:#38bdf8; font-size:15px; font-weight:bold;">${k.key}</td>
+                                <td style="color:#cbd5e1;">${new Date(k.expire).toLocaleDateString('vi-VN')}</td>
+                                <td><span class="badge" style="${statusStyle}">${k.status}</span></td>
+                                <td><button class="copy-btn" onclick="copyText('${k.key}')">📋 Copy</button></td>
+                            </tr>`;
+                        });
+                    }
+                    document.getElementById("histBody").innerHTML = h;
+                }
+            } catch(e) {}
+            
+            document.getElementById("histLoad").style.display = "none";
+        }
+
+        // Xử lý Cập nhật tiền
+        async function refreshBal() {
+            let btnRef = document.getElementById("btnRef");
+            btnRef.disabled = true;
+            btnRef.innerText = "⏳ Đang kiểm tra...";
+
+            try {
+                let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
+                let d = await res.json();
+                if (d.status === "success") {
+                    bal = d.balance;
+                    setUI(user, bal);
+                    alert("✅ Cập nhật số dư thành công!");
+                }
+            } catch(e) { alert("❌ Lỗi kết nối!"); }
+
+            btnRef.disabled = false;
+            btnRef.innerText = "🔄 Đã chuyển khoản? Bấm cập nhật số dư";
+        }
+
+        // Tiện ích Copy
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert("✅ Đã copy Key vào bộ nhớ tạm: " + text);
+        }
+
+        // Đăng xuất
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+    </script>
+</body>
+</html>
