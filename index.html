@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XWorld Shop - Mua Key Tự Động</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; max-width: 400px; width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
+        h2 { text-align: center; color: #1877f2; margin-top: 0; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #1877f2; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        button:hover { background-color: #166fe5; }
+        .btn-secondary { background-color: #42b72a; }
+        .btn-secondary:hover { background-color: #36a420; }
+        .btn-logout { background-color: #dc3545; margin-top: 20px; }
+        .btn-logout:hover { background-color: #c82333; }
+        .hidden { display: none; }
+        .balance-box { background: #e7f3ff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; border: 1px solid #1877f2; }
+        .balance-box span { font-size: 24px; font-weight: bold; color: #1877f2; }
+        .package { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .package-info h4 { margin: 0 0 5px 0; }
+        .package-info p { margin: 0; color: #666; font-size: 14px; }
+        .btn-buy { width: auto; padding: 8px 15px; margin: 0; }
+        .deposit-info { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; border: 1px solid #ffeeba; }
+        .deposit-info strong { color: #856404; }
+        #loading { text-align: center; color: #666; font-style: italic; margin-top: 10px; height: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="auth-screen">
+        <h2>🔒 XWorld Shop</h2>
+        <input type="text" id="username" placeholder="Tên tài khoản">
+        <input type="password" id="password" placeholder="Mật khẩu">
+        <div id="loading" class="hidden">⏳ Đang xử lý...</div>
+        <button onclick="login()">Đăng Nhập</button>
+        <button class="btn-secondary" onclick="register()">Tạo Tài Khoản Mới</button>
+    </div>
+
+    <div id="shop-screen" class="hidden">
+        <h2>🛒 Cửa Hàng VIP</h2>
+        <div class="balance-box">
+            Xin chào, <b id="display-user">Admin</b><br>
+            Số dư: <span id="display-balance">0</span> VNĐ
+            <button style="width: auto; padding: 5px 10px; font-size: 12px; margin-left: 10px;" onclick="refreshBalance()">🔄 Làm mới</button>
+        </div>
+
+        <div class="package">
+            <div class="package-info">
+                <h4>Gói VIP 1 Ngày</h4>
+                <p>Giá: 10.000đ</p>
+            </div>
+            <button class="btn-buy" onclick="buyVip(1)">Mua Ngay</button>
+        </div>
+        
+        <div class="package">
+            <div class="package-info">
+                <h4>Gói VIP 7 Ngày</h4>
+                <p>Giá: 70.000đ</p>
+            </div>
+            <button class="btn-buy btn-secondary" onclick="buyVip(7)">Mua Ngay</button>
+        </div>
+
+        <div class="package">
+            <div class="package-info">
+                <h4>Gói VIP 30 Ngày</h4>
+                <p>Giá: 300.000đ</p>
+            </div>
+            <button class="btn-buy" style="background-color: #8e44ad;" onclick="buyVip(30)">Mua Ngay</button>
+        </div>
+
+        <div class="deposit-info">
+            <strong>💳 HƯỚNG DẪN NẠP TIỀN TỰ ĐỘNG</strong><br>
+            Ngân hàng: MBBank<br>
+            STK: 0364675622<br>
+            Chủ thẻ: CAO DUY CUONG<br><br>
+            Nội dung chuyển khoản (Bắt buộc):<br>
+            <strong style="font-size: 18px; color: red;">NAP <span id="deposit-syntax"></span></strong><br>
+            <i>(Chuyển xong bấm nút "Làm mới" ở trên để nhận tiền)</i>
+        </div>
+
+        <button class="btn-logout" onclick="logout()">Thoát</button>
+    </div>
+</div>
+
+<script>
+    // ⚠️ DÁN LINK API MỚI NHẤT CỦA BẠN VÀO ĐÂY (Giữ nguyên trong dấu ngoặc kép)
+    const API_URL = "LINK_API_CUA_BAN_O_DAY";
+    
+    let currentUser = "";
+    let currentPass = "";
+
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    function formatMoney(amount) {
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    async function login() {
+        let u = document.getElementById('username').value;
+        let p = document.getElementById('password').value;
+        if(!u || !p) return alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
+        
+        showLoading(true);
+        try {
+            let res = await fetch(`${API_URL}?action=login&user=${u}&pass=${p}`);
+            let data = await res.json();
+            if(data.status === 'success') {
+                currentUser = u;
+                currentPass = p;
+                document.getElementById('display-user').innerText = u;
+                document.getElementById('deposit-syntax').innerText = u;
+                document.getElementById('display-balance').innerText = formatMoney(data.balance);
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('shop-screen').classList.remove('hidden');
+            } else {
+                alert("❌ Lỗi: " + data.message);
+            }
+        } catch (e) { alert("Lỗi kết nối mạng!"); }
+        showLoading(false);
+    }
+
+    async function register() {
+        let u = document.getElementById('username').value;
+        let p = document.getElementById('password').value;
+        if(!u || !p) return alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
+        
+        showLoading(true);
+        try {
+            let res = await fetch(`${API_URL}?action=register&user=${u}&pass=${p}`);
+            let data = await res.json();
+            alert(data.status === 'success' ? "✅ Đăng ký thành công! Hãy bấm Đăng nhập." : "❌ Lỗi: " + data.message);
+        } catch (e) { alert("Lỗi kết nối mạng!"); }
+        showLoading(false);
+    }
+
+    async function refreshBalance() {
+        try {
+            let res = await fetch(`${API_URL}?action=login&user=${currentUser}&pass=${currentPass}`);
+            let data = await res.json();
+            if(data.status === 'success') {
+                document.getElementById('display-balance').innerText = formatMoney(data.balance);
+                alert("✅ Đã cập nhật số dư mới nhất!");
+            }
+        } catch (e) { alert("Lỗi mạng!"); }
+    }
+
+    async function buyVip(days) {
+        if(!confirm(`Bạn có chắc muốn mua gói VIP ${days} ngày?`)) return;
+        
+        try {
+            let res = await fetch(`${API_URL}?action=buy&user=${currentUser}&pass=${currentPass}&days=${days}`);
+            let data = await res.json();
+            if(data.status === 'success') {
+                document.getElementById('display-balance').innerText = formatMoney(data.new_balance);
+                prompt("✅ MUA THÀNH CÔNG! Copy mã Key của bạn ở bên dưới:", data.key);
+            } else {
+                alert("❌ Thất bại: " + data.message);
+            }
+        } catch (e) { alert("Lỗi mạng!"); }
+    }
+
+    function logout() {
+        currentUser = ""; currentPass = "";
+        document.getElementById('username').value = "";
+        document.getElementById('password').value = "";
+        document.getElementById('auth-screen').classList.remove('hidden');
+        document.getElementById('shop-screen').classList.add('hidden');
+    }
+</script>
+
+</body>
+</html>
