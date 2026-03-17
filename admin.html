@@ -1,200 +1,329 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>ADMIN PANEL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XWORLD | ADMIN PANEL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-<style>
+        body { background: #0b0f19; color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; }
+        * { box-sizing: border-box; }
 
-body{
-background:#0b0f19;
-color:white;
-font-family:Inter;
-margin:0;
-}
+        /* SIDEBAR */
+        .sidebar { width: 250px; background: #121826; height: 100vh; position: fixed; padding: 20px; border-right: 1px solid rgba(0,255,195,0.1); }
+        .sidebar h2 { color: #00ffc3; text-align: center; letter-spacing: 2px; margin-bottom: 30px; font-weight: 800; text-shadow: 0 0 10px rgba(0,255,195,0.3); }
+        .menu { margin-bottom: 10px; cursor: pointer; padding: 12px 15px; border-radius: 8px; background: transparent; color: #94a3b8; font-weight: 600; transition: 0.2s; border: 1px solid transparent; }
+        .menu:hover, .menu.active { background: rgba(0,255,195,0.1); color: #00ffc3; border-color: rgba(0,255,195,0.2); }
 
-.sidebar{
-width:230px;
-background:#121826;
-height:100vh;
-position:fixed;
-padding:20px;
-}
+        /* MAIN CONTENT */
+        .main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); height: 100vh; overflow-y: auto; }
+        .card { background: #121826; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .card h2 { margin-top: 0; color: white; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 20px; }
 
-.menu{
-margin-bottom:15px;
-cursor:pointer;
-padding:10px;
-border-radius:6px;
-background:#0f172a;
-}
+        /* LƯỚI THỐNG KÊ (DASHBOARD) */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .stat-box { background: #0f131f; padding: 20px; border-radius: 10px; border: 1px solid rgba(0,255,195,0.2); text-align: center; }
+        .stat-box h3 { margin: 0; color: #94a3b8; font-size: 14px; text-transform: uppercase; }
+        .stat-box .val { font-size: 32px; font-weight: 800; color: #00ffc3; margin-top: 10px; }
 
-.menu:hover{
-background:#00ffc3;
-color:black;
-}
+        /* FORM NHẬP LIỆU */
+        input { width: 100%; padding: 12px 15px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 6px; font-family: inherit; }
+        input:focus { border-color: #00ffc3; outline: none; }
+        button { padding: 12px 20px; background: #00ffc3; color: black; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { box-shadow: 0 0 15px rgba(0,255,195,0.4); }
+        button:disabled { opacity: 0.5; cursor: wait; }
 
-.main{
-margin-left:250px;
-padding:30px;
-}
+        /* TABLE */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        td, th { padding: 12px 15px; border-bottom: 1px solid #334155; text-align: left; }
+        th { color: #94a3b8; font-size: 13px; text-transform: uppercase; background: #0b0f19; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        /* BADGE & BUTTONS IN TABLE */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-active { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+        .badge-banned { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
 
-.card{
-background:#121826;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
-}
+        .btn-sm { padding: 6px 10px; font-size: 12px; border-radius: 4px; margin-right: 5px; }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: #ef4444; color: white; }
+        .btn-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .btn-warning:hover { background: #f59e0b; color: white; }
 
-input{
-width:100%;
-padding:10px;
-margin:6px 0;
-background:#0b0f19;
-border:1px solid #333;
-color:white;
-}
-
-button{
-padding:10px;
-background:#00ffc3;
-border:none;
-cursor:pointer;
-font-weight:bold;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-td,th{
-padding:10px;
-border-bottom:1px solid #333;
-}
-
-</style>
+        #loadingMsg { text-align: center; color: #00ffc3; font-style: italic; margin-top: 20px; display: none; }
+    </style>
 </head>
 
 <body>
 
-<div class="sidebar">
+    <div class="sidebar">
+        <h2>XW.ADMIN</h2>
+        <div class="menu active" onclick="view('dashboard', this)">📊 Dashboard</div>
+        <div class="menu" onclick="view('products', this)">📦 Products (Shop)</div>
+        <div class="menu" onclick="view('users', this)">👥 Users List</div>
+        <div class="menu" onclick="view('keys', this)">🔑 Keys Manager</div>
+        <div style="margin-top: 50px;">
+            <button style="width: 100%; background: transparent; border: 1px solid #ef4444; color: #ef4444;" onclick="logout()">Thoát Admin</button>
+        </div>
+    </div>
 
-<h2>ADMIN</h2>
+    <div class="main">
+        <div id="loadingMsg">⏳ Đang lấy dữ liệu từ máy chủ...</div>
 
-<div class="menu" onclick="view('dashboard')">Dashboard</div>
-<div class="menu" onclick="view('products')">Products</div>
-<div class="menu" onclick="view('users')">Users</div>
-<div class="menu" onclick="view('keys')">Keys</div>
-<div class="menu" onclick="view('stats')">Revenue</div>
+        <div id="dashboard" class="view-section">
+            <div class="card">
+                <h2>Tổng Quan Hệ Thống</h2>
+                <div class="grid-3">
+                    <div class="stat-box"><h3>Tổng Khách Hàng</h3><div class="val" id="statUsers">0</div></div>
+                    <div class="stat-box"><h3>Tổng Key Đã Bán</h3><div class="val" id="statKeys">0</div></div>
+                    <div class="stat-box"><h3>Tổng Doanh Thu</h3><div class="val" id="statRev" style="color:#f59e0b;">0 ₫</div></div>
+                </div>
+            </div>
+        </div>
 
-</div>
+        <div id="products" class="view-section" style="display:none">
+            <div class="card">
+                <h2>Thêm Sản Phẩm Mới</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input id="pname" placeholder="Tên sản phẩm (VD: Tool Golike Pro)">
+                    <input id="pprice" type="number" placeholder="Giá tiền / 1 ngày (VNĐ)">
+                    <input id="pdesc" placeholder="Mô tả tính năng ngắn gọn">
+                    <input id="pimg" placeholder="Link ảnh (Tùy chọn)">
+                    <input id="pguide" placeholder="Link hướng dẫn sử dụng (Tùy chọn)">
+                </div>
+                <button id="btnAddProd" onclick="addProduct()">➕ Thêm Sản Phẩm Vào Shop</button>
+            </div>
+            <div class="card">
+                <h2>Danh Sách Sản Phẩm Đang Bán</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>ID</th><th>Tên SP</th><th>Giá/Ngày</th><th>Trạng Thái</th><th>Thao Tác</th></tr></thead>
+                        <tbody id="productTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<div class="main">
+        <div id="users" class="view-section" style="display:none">
+            <div class="card">
+                <h2>Quản Lý Người Dùng</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Tài khoản</th><th>Số dư (VNĐ)</th><th>Ngày tạo</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                        <tbody id="userTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<div id="dashboard">
+        <div id="keys" class="view-section" style="display:none">
+            <div class="card">
+                <h2>Quản Lý Key Tool</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Mã Key</th><th>Chủ sở hữu</th><th>Hết hạn</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                        <tbody id="keyTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<div class="card">
-<h2>Dashboard</h2>
+    </div>
 
-<div id="statsBox"></div>
+    <script>
+        // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY (Giữ nguyên đuôi /exec)
+        const API = "https://script.google.com/macros/s/AKfycbxvSkK0slmP5VcE62d1R5lgB9npW6Y7WlGls0lvqmQINMlp4yLLTrUaSxhkfj2XLcYg8w/exec";
+        
+        // BẢO MẬT: Hỏi Mật khẩu Admin khi vừa vào trang
+        let ADMIN_PASS = sessionStorage.getItem("xw_admin_pass");
+        if (!ADMIN_PASS) {
+            ADMIN_PASS = prompt("🔒 HỆ THỐNG QUẢN TRỊ:\nVui lòng nhập Mật khẩu Admin:");
+            if (ADMIN_PASS) sessionStorage.setItem("xw_admin_pass", ADMIN_PASS);
+            else document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px; color:#ef4444;'>Truy cập bị từ chối.</h2>";
+        }
 
-</div>
+        // Tự động load Dashboard khi vừa mở web
+        window.onload = () => { if(ADMIN_PASS) loadDashboard(); };
 
-</div>
+        // Hàm chuyển Tab
+        function view(v, elm) {
+            document.querySelectorAll(".view-section").forEach(e => e.style.display = "none");
+            document.querySelectorAll(".menu").forEach(e => e.classList.remove("active"));
+            
+            document.getElementById(v).style.display = "block";
+            elm.classList.add("active");
+            
+            if (v === 'dashboard') loadDashboard();
+            if (v === 'products') loadProducts();
+            if (v === 'users') loadUsers();
+            if (v === 'keys') loadKeys();
+        }
 
-<div id="products" style="display:none">
+        // HÀM GỌI API CHUNG (Bao gồm báo lỗi nếu sai pass)
+        async function fetchAPI(action, params = "") {
+            document.getElementById("loadingMsg").style.display = "block";
+            try {
+                let res = await fetch(`${API}?action=${action}&admin_pass=${ADMIN_PASS}${params}`);
+                let data = await res.json();
+                document.getElementById("loadingMsg").style.display = "none";
+                
+                if(data.status === "error" && !data.message) {
+                    alert("❌ Sai mật khẩu Admin hoặc bạn không có quyền!");
+                    sessionStorage.removeItem("xw_admin_pass");
+                    location.reload();
+                    return null;
+                }
+                return data;
+            } catch(e) {
+                document.getElementById("loadingMsg").style.display = "none";
+                alert("❌ Lỗi mạng: Không thể kết nối tới Google Sheets.");
+                return null;
+            }
+        }
 
-<div class="card">
+        // ==========================================
+        // 1. DASHBOARD
+        // ==========================================
+        async function loadDashboard() {
+            let data = await fetchAPI("admin_stats");
+            if(data && data.status === "success") {
+                document.getElementById("statUsers").innerText = data.users.toLocaleString();
+                document.getElementById("statKeys").innerText = data.keys.toLocaleString();
+                document.getElementById("statRev").innerText = data.revenue.toLocaleString() + " ₫";
+            }
+        }
 
-<h2>Add Product</h2>
+        // ==========================================
+        // 2. SẢN PHẨM (PRODUCTS)
+        // ==========================================
+        async function loadProducts() {
+            // Lấy trực tiếp hàm "products" (Hàm này không cần admin_pass nhưng ta cứ gọi bình thường)
+            let res = await fetch(`${API}?action=products`);
+            let data = await res.json();
+            
+            let html = "";
+            if (data.status === "success" && data.data) {
+                data.data.forEach(p => {
+                    html += `<tr>
+                        <td style="color:#94a3b8; font-family:monospace;">${p.id}</td>
+                        <td style="font-weight:bold; color:white;">${p.name}</td>
+                        <td style="color:#00ffc3;">${Number(p.price).toLocaleString()} ₫</td>
+                        <td><span class="badge badge-active">Đang Bán</span></td>
+                        <td>
+                            <button class="btn-sm btn-danger" onclick="delProduct('${p.id}')">Xóa</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            document.getElementById("productTable").innerHTML = html || "<tr><td colspan='5'>Chưa có sản phẩm nào.</td></tr>";
+        }
 
-<input id="pname" placeholder="name">
-<input id="pprice" placeholder="price">
-<input id="pdesc" placeholder="description">
-<input id="pimg" placeholder="image url">
-<input id="pguide" placeholder="guide link">
+        async function addProduct() {
+            let name = document.getElementById("pname").value.trim();
+            let price = document.getElementById("pprice").value.trim();
+            let desc = document.getElementById("pdesc").value.trim();
+            let img = document.getElementById("pimg").value.trim();
+            let guide = document.getElementById("pguide").value.trim();
 
-<button onclick="addProduct()">ADD</button>
+            if (!name || !price) return alert("⚠️ Tên và Giá sản phẩm không được bỏ trống!");
 
-</div>
+            let btn = document.getElementById("btnAddProd");
+            btn.disabled = true; btn.innerText = "Đang xử lý...";
 
-<div class="card">
+            // Mã hóa URL để tránh lỗi khoảng trắng
+            let params = `&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&desc=${encodeURIComponent(desc)}&image=${encodeURIComponent(img)}&guide=${encodeURIComponent(guide)}`;
+            
+            let data = await fetchAPI("admin_add_product", params);
+            if(data && data.status === "success") {
+                alert("✅ Thêm sản phẩm thành công!");
+                document.querySelectorAll("#products input").forEach(i => i.value = "");
+                loadProducts();
+            } else if(data) { alert("❌ Lỗi: " + data.message); }
 
-<h2>Product List</h2>
+            btn.disabled = false; btn.innerText = "➕ Thêm Sản Phẩm Vào Shop";
+        }
 
-<table id="productTable"></table>
+        async function delProduct(id) {
+            if(!confirm(`⚠️ Bạn có chắc muốn XÓA sản phẩm ID: ${id}?`)) return;
+            let data = await fetchAPI("admin_delete_product", `&id=${id}`);
+            if(data && data.status === "success") {
+                alert("✅ Đã xóa sản phẩm!");
+                loadProducts();
+            }
+        }
 
-</div>
+        // ==========================================
+        // 3. NGƯỜI DÙNG (USERS)
+        // ==========================================
+        async function loadUsers() {
+            let data = await fetchAPI("admin_users");
+            let html = "";
+            if (data && data.status === "success") {
+                data.data.forEach(u => {
+                    let badge = u.status === 'banned' ? '<span class="badge badge-banned">Banned</span>' : '<span class="badge badge-active">Active</span>';
+                    html += `<tr>
+                        <td style="font-weight:bold; color:white;">${u.user}</td>
+                        <td style="color:#00ffc3; font-family:monospace;">${Number(u.balance).toLocaleString()} ₫</td>
+                        <td style="color:#94a3b8;">${new Date(u.created).toLocaleDateString()}</td>
+                        <td>${badge}</td>
+                        <td><button class="btn-sm btn-danger" onclick="banUser('${u.user}')">Khóa Nick</button></td>
+                    </tr>`;
+                });
+            }
+            document.getElementById("userTable").innerHTML = html;
+        }
 
-</div>
+        async function banUser(target) {
+            if(!confirm(`⚠️ Xác nhận KHÓA VĨNH VIỄN tài khoản: ${target}?`)) return;
+            let data = await fetchAPI("admin_ban", `&target=${target}`);
+            if(data && data.status === "success") { alert("✅ Đã khóa!"); loadUsers(); }
+        }
 
-<div id="users" style="display:none">
+        // ==========================================
+        // 4. KEY TOOL (KEYS)
+        // ==========================================
+        async function loadKeys() {
+            let data = await fetchAPI("admin_keys");
+            let html = "";
+            if (data && data.status === "success") {
+                data.data.forEach(k => {
+                    let badge = k.status === 'banned' ? '<span class="badge badge-banned">Banned</span>' : '<span class="badge badge-active">Active</span>';
+                    html += `<tr>
+                        <td style="color:#38bdf8; font-family:monospace; font-weight:bold;">${k.key}</td>
+                        <td>${k.user}</td>
+                        <td style="color:#94a3b8;">${new Date(k.expire).toLocaleDateString()}</td>
+                        <td>${badge}</td>
+                        <td>
+                            <button class="btn-sm btn-warning" onclick="resetHwid('${k.key}')">Reset HWID</button>
+                            <button class="btn-sm btn-danger" onclick="banKey('${k.key}')">Hủy Key</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            document.getElementById("keyTable").innerHTML = html;
+        }
 
-<div class="card">
+        async function resetHwid(key) {
+            if(!confirm(`⚠️ Bạn muốn mở khóa HWID cho Key: ${key} để khách dùng trên máy khác?`)) return;
+            let data = await fetchAPI("admin_reset_hwid", `&key=${key}`);
+            if(data && data.status === "success") { alert("✅ Đã Reset HWID thành công!"); loadKeys(); }
+        }
 
-<h2>User List</h2>
+        async function banKey(key) {
+            if(!confirm(`⚠️ Bạn muốn KHÓA Key: ${key}? Khách sẽ không thể dùng Tool được nữa.`)) return;
+            let data = await fetchAPI("admin_ban_key", `&key=${key}`);
+            if(data && data.status === "success") { alert("✅ Đã khóa Key!"); loadKeys(); }
+        }
 
-<table id="userTable"></table>
-
-</div>
-
-</div>
-
-<div id="keys" style="display:none">
-
-<div class="card">
-
-<h2>Key Manager</h2>
-
-<table id="keyTable"></table>
-
-</div>
-
-</div>
-
-<div id="stats" style="display:none">
-
-<div class="card">
-
-<h2>Revenue</h2>
-
-<div id="revenue"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-const API="YOUR_API_LINK"
-
-function view(v){
-
-document.querySelectorAll(".main>div")
-.forEach(e=>e.style.display="none")
-
-document.getElementById(v).style.display="block"
-
-}
-
-async function addProduct(){
-
-let name=document.getElementById("pname").value
-let price=document.getElementById("pprice").value
-let desc=document.getElementById("pdesc").value
-let img=document.getElementById("pimg").value
-let guide=document.getElementById("pguide").value
-
-await fetch(API+`?action=adminAddProduct&name=${name}&price=${price}&desc=${desc}&image=${img}&guide=${guide}`)
-
-alert("added")
-
-}
-
-</script>
-
+        // ==========================================
+        // THOÁT ADMIN
+        // ==========================================
+        function logout() {
+            sessionStorage.removeItem("xw_admin_pass");
+            location.reload();
+        }
+    </script>
 </body>
 </html>
