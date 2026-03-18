@@ -3,78 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XWORLD | ADMIN PANEL</title>
+    <title>XWORLD | SECURITY ADMIN</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-        body { background: #0b0f19; color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; }
+        body { background: #0b0f19; color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; overflow-x: hidden; }
         * { box-sizing: border-box; }
 
-        /* SIDEBAR */
-        .sidebar { width: 250px; background: #121826; height: 100vh; position: fixed; padding: 20px; border-right: 1px solid rgba(0,255,195,0.1); }
+        /* =========================================
+           MÀN HÌNH ĐĂNG NHẬP BẢO MẬT KÍN
+           ========================================= */
+        #secure-login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #06090f; z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        .login-box { background: #121826; padding: 40px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 0 50px rgba(0, 0, 0, 0.8); width: 90%; max-width: 400px; text-align: center; }
+        .login-box h2 { color: #ef4444; letter-spacing: 2px; text-transform: uppercase; margin-top: 0; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .login-box p { color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
+        .login-box input { text-align: center; letter-spacing: 3px; font-size: 18px; }
+
+        /* =========================================
+           MOBILE HEADER (NÚT 3 GẠCH)
+           ========================================= */
+        .mobile-header { display: none; background: #121826; padding: 15px 20px; border-bottom: 1px solid rgba(0,255,195,0.1); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; align-items: center; justify-content: space-between; }
+        .mobile-header .logo { color: #00ffc3; font-weight: 800; font-size: 20px; letter-spacing: 1px; }
+        .hamburger { font-size: 26px; color: #00ffc3; cursor: pointer; }
+
+        /* =========================================
+           SIDEBAR
+           ========================================= */
+        .sidebar { width: 250px; background: #121826; height: 100vh; position: fixed; padding: 20px; border-right: 1px solid rgba(0,255,195,0.1); z-index: 999; transition: transform 0.3s ease; }
         .sidebar h2 { color: #00ffc3; text-align: center; letter-spacing: 2px; margin-bottom: 30px; font-weight: 800; text-shadow: 0 0 10px rgba(0,255,195,0.3); }
         .menu { margin-bottom: 10px; cursor: pointer; padding: 12px 15px; border-radius: 8px; background: transparent; color: #94a3b8; font-weight: 600; transition: 0.2s; border: 1px solid transparent; }
         .menu:hover, .menu.active { background: rgba(0,255,195,0.1); color: #00ffc3; border-color: rgba(0,255,195,0.2); }
 
-        /* MAIN CONTENT */
-        .main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); height: 100vh; overflow-y: auto; }
+        /* Lớp phủ làm tối màn hình khi mở menu trên điện thoại */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 998; backdrop-filter: blur(2px); }
+
+        /* =========================================
+           MAIN CONTENT & GRID
+           ========================================= */
+        .main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); min-height: 100vh; overflow-y: auto; }
         .card { background: #121826; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .card h2 { margin-top: 0; color: white; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 20px; }
 
-        /* LƯỚI THỐNG KÊ (DASHBOARD) */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-box { background: #0f131f; padding: 20px; border-radius: 10px; border: 1px solid rgba(0,255,195,0.2); text-align: center; }
         .stat-box h3 { margin: 0; color: #94a3b8; font-size: 14px; text-transform: uppercase; }
         .stat-box .val { font-size: 32px; font-weight: 800; color: #00ffc3; margin-top: 10px; }
 
-        /* FORM NHẬP LIỆU */
-        input { width: 100%; padding: 12px 15px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 6px; font-family: inherit; }
-        input:focus { border-color: #00ffc3; outline: none; }
-        button { padding: 12px 20px; background: #00ffc3; color: black; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { box-shadow: 0 0 15px rgba(0,255,195,0.4); }
+        /* COMPONENTS */
+        input { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-family: inherit; transition: 0.2s; }
+        input:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 2px rgba(0,255,195,0.1); }
+        button { padding: 14px 20px; background: #00ffc3; color: black; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; width: 100%; font-size: 15px; }
+        button:hover:not(:disabled) { box-shadow: 0 0 15px rgba(0,255,195,0.4); transform: translateY(-2px); }
         button:disabled { opacity: 0.5; cursor: wait; }
 
-        /* TABLE */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        td, th { padding: 12px 15px; border-bottom: 1px solid #334155; text-align: left; }
+        td, th { padding: 14px 15px; border-bottom: 1px solid #334155; text-align: left; white-space: nowrap; }
         th { color: #94a3b8; font-size: 13px; text-transform: uppercase; background: #0b0f19; }
         tr:hover { background: rgba(255,255,255,0.02); }
         
-        /* BADGE & BUTTONS IN TABLE */
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .badge-active { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
         .badge-banned { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
 
-        .btn-sm { padding: 6px 10px; font-size: 12px; border-radius: 4px; margin-right: 5px; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 4px; margin-right: 5px; width: auto; }
         .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .btn-danger:hover { background: #ef4444; color: white; }
         .btn-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
         .btn-warning:hover { background: #f59e0b; color: white; }
 
-        #loadingMsg { text-align: center; color: #00ffc3; font-style: italic; margin-top: 20px; display: none; }
+        #loadingMsg { text-align: center; color: #00ffc3; font-style: italic; margin-bottom: 20px; display: none; font-weight: bold; }
+
+        /* =========================================
+           MOBILE RESPONSIVE RULES (SỬA LỖI GIAO DIỆN)
+           ========================================= */
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+            .sidebar { transform: translateX(-100%); top: 60px; height: calc(100vh - 60px); border-right: none; }
+            .sidebar.show { transform: translateX(0); box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+            .sidebar h2 { display: none; } /* Ẩn chữ Admin to trên đt cho gọn */
+            .main { margin-left: 0; width: 100%; padding: 15px; padding-top: 80px; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .overlay.show { display: block; }
+        }
     </style>
 </head>
-
 <body>
 
-    <div class="sidebar">
-        <h2>XW.ADMIN</h2>
-        <div class="menu active" onclick="view('dashboard', this)">📊 Dashboard</div>
-        <div class="menu" onclick="view('products', this)">📦 Products (Shop)</div>
-        <div class="menu" onclick="view('users', this)">👥 Users List</div>
-        <div class="menu" onclick="view('keys', this)">🔑 Keys Manager</div>
-        <div style="margin-top: 50px;">
-            <button style="width: 100%; background: transparent; border: 1px solid #ef4444; color: #ef4444;" onclick="logout()">Thoát Admin</button>
+    <div id="secure-login-screen">
+        <div class="login-box">
+            <h2>HỆ THỐNG NỘI BỘ</h2>
+            <p>Vui lòng nhập Mã Khóa Quản Trị để truy cập</p>
+            <input type="password" id="adminPassInput" placeholder="••••••••" onkeypress="if(event.key === 'Enter') loginAdmin()">
+            <button id="btnLogin" onclick="loginAdmin()">🔑 XÁC THỰC</button>
+            <div id="loginError" style="color: #ef4444; margin-top: 15px; font-size: 13px; display: none;">❌ Mã khóa không hợp lệ hoặc sai kết nối!</div>
+        </div>
+    </div>
+
+    <div class="mobile-header">
+        <div class="logo">XW.ADMIN</div>
+        <div class="hamburger" onclick="toggleSidebar()">☰</div>
+    </div>
+    
+    <div class="overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <h2 class="hide-mobile">XW.ADMIN</h2>
+        <div class="menu active" onclick="view('dashboard', this)">📊 Tổng Quan Hệ Thống</div>
+        <div class="menu" onclick="view('products', this)">📦 Quản Lý Cửa Hàng</div>
+        <div class="menu" onclick="view('users', this)">👥 Danh Sách Khách Hàng</div>
+        <div class="menu" onclick="view('keys', this)">🔑 Quản Lý Key Tool</div>
+        <div style="margin-top: 40px;">
+            <button style="background: transparent; border: 1px solid #ef4444; color: #ef4444;" onclick="logout()">🚪 Khóa Hệ Thống</button>
         </div>
     </div>
 
     <div class="main">
-        <div id="loadingMsg">⏳ Đang lấy dữ liệu từ máy chủ...</div>
+        <div id="loadingMsg">⏳ Hệ thống đang đồng bộ dữ liệu...</div>
 
         <div id="dashboard" class="view-section">
             <div class="card">
-                <h2>Tổng Quan Hệ Thống</h2>
+                <h2>Báo Cáo Hoạt Động</h2>
                 <div class="grid-3">
                     <div class="stat-box"><h3>Tổng Khách Hàng</h3><div class="val" id="statUsers">0</div></div>
                     <div class="stat-box"><h3>Tổng Key Đã Bán</h3><div class="val" id="statKeys">0</div></div>
@@ -86,17 +137,17 @@
         <div id="products" class="view-section" style="display:none">
             <div class="card">
                 <h2>Thêm Sản Phẩm Mới</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="grid-2">
                     <input id="pname" placeholder="Tên sản phẩm (VD: Tool Golike Pro)">
                     <input id="pprice" type="number" placeholder="Giá tiền / 1 ngày (VNĐ)">
                     <input id="pdesc" placeholder="Mô tả tính năng ngắn gọn">
                     <input id="pimg" placeholder="Link ảnh (Tùy chọn)">
-                    <input id="pguide" placeholder="Link hướng dẫn sử dụng (Tùy chọn)">
                 </div>
-                <button id="btnAddProd" onclick="addProduct()">➕ Thêm Sản Phẩm Vào Shop</button>
+                <input id="pguide" placeholder="Link hướng dẫn sử dụng (Tùy chọn)">
+                <button id="btnAddProd" onclick="addProduct()">➕ Thêm Sản Phẩm</button>
             </div>
             <div class="card">
-                <h2>Danh Sách Sản Phẩm Đang Bán</h2>
+                <h2>Kho Hàng Đang Bán</h2>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>ID</th><th>Tên SP</th><th>Giá/Ngày</th><th>Trạng Thái</th><th>Thao Tác</th></tr></thead>
@@ -108,7 +159,7 @@
 
         <div id="users" class="view-section" style="display:none">
             <div class="card">
-                <h2>Quản Lý Người Dùng</h2>
+                <h2>Khách Hàng Hệ Thống</h2>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Tài khoản</th><th>Số dư (VNĐ)</th><th>Ngày tạo</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
@@ -120,7 +171,7 @@
 
         <div id="keys" class="view-section" style="display:none">
             <div class="card">
-                <h2>Quản Lý Key Tool</h2>
+                <h2>Key Tool Đã Phát Hành</h2>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Mã Key</th><th>Chủ sở hữu</th><th>Hết hạn</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
@@ -136,18 +187,62 @@
         // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY (Giữ nguyên đuôi /exec)
         const API = "https://script.google.com/macros/s/AKfycbxvSkK0slmP5VcE62d1R5lgB9npW6Y7WlGls0lvqmQINMlp4yLLTrUaSxhkfj2XLcYg8w/exec";
         
-        // BẢO MẬT: Hỏi Mật khẩu Admin khi vừa vào trang
-        let ADMIN_PASS = sessionStorage.getItem("xw_admin_pass");
-        if (!ADMIN_PASS) {
-            ADMIN_PASS = prompt("🔒 HỆ THỐNG QUẢN TRỊ:\nVui lòng nhập Mật khẩu Admin:");
-            if (ADMIN_PASS) sessionStorage.setItem("xw_admin_pass", ADMIN_PASS);
-            else document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px; color:#ef4444;'>Truy cập bị từ chối.</h2>";
+        let ADMIN_PASS = sessionStorage.getItem("xw_admin_pass") || "";
+
+        // Kiểm tra Token ngay khi vào web
+        window.onload = () => {
+            if (ADMIN_PASS) {
+                document.getElementById("secure-login-screen").style.display = "none";
+                loadDashboard();
+            }
+        };
+
+        // Bật/Tắt Menu Sidebar trên điện thoại
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('mobileOverlay').classList.toggle('show');
         }
 
-        // Tự động load Dashboard khi vừa mở web
-        window.onload = () => { if(ADMIN_PASS) loadDashboard(); };
+        // ==========================================
+        // LOGIN XÁC THỰC
+        // ==========================================
+        async function loginAdmin() {
+            let passInput = document.getElementById("adminPassInput").value.trim();
+            if (!passInput) return;
 
-        // Hàm chuyển Tab
+            let btn = document.getElementById("btnLogin");
+            btn.disabled = true; btn.innerText = "ĐANG KIỂM TRA...";
+            document.getElementById("loginError").style.display = "none";
+
+            try {
+                // Gọi thử API Admin Stats để xem mật khẩu đúng không
+                let res = await fetch(`${API}?action=admin_stats&admin_pass=${passInput}`);
+                let data = await res.json();
+
+                if (data.status === "success") {
+                    // ĐÚNG MẬT KHẨU -> Lưu lại và mở khóa màn hình
+                    ADMIN_PASS = passInput;
+                    sessionStorage.setItem("xw_admin_pass", ADMIN_PASS);
+                    
+                    document.getElementById("secure-login-screen").style.opacity = "0";
+                    setTimeout(() => { 
+                        document.getElementById("secure-login-screen").style.display = "none"; 
+                        loadDashboard(); // Cập nhật dữ liệu luôn (vì đã kéo về lúc nãy)
+                        document.getElementById("statUsers").innerText = data.users.toLocaleString();
+                        document.getElementById("statKeys").innerText = data.keys.toLocaleString();
+                        document.getElementById("statRev").innerText = data.revenue.toLocaleString() + " ₫";
+                    }, 500);
+                } else {
+                    document.getElementById("loginError").style.display = "block";
+                }
+            } catch (e) {
+                document.getElementById("loginError").innerText = "❌ Không thể kết nối đến Máy chủ Google!";
+                document.getElementById("loginError").style.display = "block";
+            }
+            btn.disabled = false; btn.innerText = "🔑 XÁC THỰC";
+        }
+
+        // Chuyển Tab Menu
         function view(v, elm) {
             document.querySelectorAll(".view-section").forEach(e => e.style.display = "none");
             document.querySelectorAll(".menu").forEach(e => e.classList.remove("active"));
@@ -155,13 +250,15 @@
             document.getElementById(v).style.display = "block";
             elm.classList.add("active");
             
+            if(window.innerWidth <= 768) toggleSidebar(); // Tự đóng menu trên đt khi bấm xong
+            
             if (v === 'dashboard') loadDashboard();
             if (v === 'products') loadProducts();
             if (v === 'users') loadUsers();
             if (v === 'keys') loadKeys();
         }
 
-        // HÀM GỌI API CHUNG (Bao gồm báo lỗi nếu sai pass)
+        // HÀM GỌI API CHUNG
         async function fetchAPI(action, params = "") {
             document.getElementById("loadingMsg").style.display = "block";
             try {
@@ -170,22 +267,19 @@
                 document.getElementById("loadingMsg").style.display = "none";
                 
                 if(data.status === "error" && !data.message) {
-                    alert("❌ Sai mật khẩu Admin hoặc bạn không có quyền!");
-                    sessionStorage.removeItem("xw_admin_pass");
-                    location.reload();
+                    alert("⚠️ Phiên đăng nhập hết hạn hoặc mật khẩu đã bị đổi!");
+                    logout();
                     return null;
                 }
                 return data;
             } catch(e) {
                 document.getElementById("loadingMsg").style.display = "none";
-                alert("❌ Lỗi mạng: Không thể kết nối tới Google Sheets.");
+                alert("❌ Lỗi mạng: Không thể lấy dữ liệu từ Server.");
                 return null;
             }
         }
 
-        // ==========================================
         // 1. DASHBOARD
-        // ==========================================
         async function loadDashboard() {
             let data = await fetchAPI("admin_stats");
             if(data && data.status === "success") {
@@ -195,14 +289,10 @@
             }
         }
 
-        // ==========================================
-        // 2. SẢN PHẨM (PRODUCTS)
-        // ==========================================
+        // 2. PRODUCTS
         async function loadProducts() {
-            // Lấy trực tiếp hàm "products" (Hàm này không cần admin_pass nhưng ta cứ gọi bình thường)
             let res = await fetch(`${API}?action=products`);
             let data = await res.json();
-            
             let html = "";
             if (data.status === "success" && data.data) {
                 data.data.forEach(p => {
@@ -211,9 +301,7 @@
                         <td style="font-weight:bold; color:white;">${p.name}</td>
                         <td style="color:#00ffc3;">${Number(p.price).toLocaleString()} ₫</td>
                         <td><span class="badge badge-active">Đang Bán</span></td>
-                        <td>
-                            <button class="btn-sm btn-danger" onclick="delProduct('${p.id}')">Xóa</button>
-                        </td>
+                        <td><button class="btn-sm btn-danger" onclick="delProduct('${p.id}')">Xóa</button></td>
                     </tr>`;
                 });
             }
@@ -227,48 +315,42 @@
             let img = document.getElementById("pimg").value.trim();
             let guide = document.getElementById("pguide").value.trim();
 
-            if (!name || !price) return alert("⚠️ Tên và Giá sản phẩm không được bỏ trống!");
+            if (!name || !price) return alert("⚠️ Bắt buộc nhập Tên và Giá!");
 
             let btn = document.getElementById("btnAddProd");
-            btn.disabled = true; btn.innerText = "Đang xử lý...";
+            btn.disabled = true; btn.innerText = "Đang đồng bộ lên Server...";
 
-            // Mã hóa URL để tránh lỗi khoảng trắng
             let params = `&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&desc=${encodeURIComponent(desc)}&image=${encodeURIComponent(img)}&guide=${encodeURIComponent(guide)}`;
-            
             let data = await fetchAPI("admin_add_product", params);
+            
             if(data && data.status === "success") {
                 alert("✅ Thêm sản phẩm thành công!");
                 document.querySelectorAll("#products input").forEach(i => i.value = "");
                 loadProducts();
-            } else if(data) { alert("❌ Lỗi: " + data.message); }
+            } else if(data) alert("❌ Lỗi: " + data.message);
 
-            btn.disabled = false; btn.innerText = "➕ Thêm Sản Phẩm Vào Shop";
+            btn.disabled = false; btn.innerText = "➕ Thêm Sản Phẩm";
         }
 
         async function delProduct(id) {
-            if(!confirm(`⚠️ Bạn có chắc muốn XÓA sản phẩm ID: ${id}?`)) return;
+            if(!confirm(`⚠️ CHÚ Ý: Xóa sản phẩm ID [${id}] khỏi cửa hàng?`)) return;
             let data = await fetchAPI("admin_delete_product", `&id=${id}`);
-            if(data && data.status === "success") {
-                alert("✅ Đã xóa sản phẩm!");
-                loadProducts();
-            }
+            if(data && data.status === "success") loadProducts();
         }
 
-        // ==========================================
-        // 3. NGƯỜI DÙNG (USERS)
-        // ==========================================
+        // 3. USERS
         async function loadUsers() {
             let data = await fetchAPI("admin_users");
             let html = "";
             if (data && data.status === "success") {
                 data.data.forEach(u => {
-                    let badge = u.status === 'banned' ? '<span class="badge badge-banned">Banned</span>' : '<span class="badge badge-active">Active</span>';
+                    let badge = u.status === 'banned' ? '<span class="badge badge-banned">Bị Khóa</span>' : '<span class="badge badge-active">Bình thường</span>';
                     html += `<tr>
                         <td style="font-weight:bold; color:white;">${u.user}</td>
                         <td style="color:#00ffc3; font-family:monospace;">${Number(u.balance).toLocaleString()} ₫</td>
                         <td style="color:#94a3b8;">${new Date(u.created).toLocaleDateString()}</td>
                         <td>${badge}</td>
-                        <td><button class="btn-sm btn-danger" onclick="banUser('${u.user}')">Khóa Nick</button></td>
+                        <td><button class="btn-sm btn-danger" onclick="banUser('${u.user}')">Ban Nick</button></td>
                     </tr>`;
                 });
             }
@@ -276,54 +358,11 @@
         }
 
         async function banUser(target) {
-            if(!confirm(`⚠️ Xác nhận KHÓA VĨNH VIỄN tài khoản: ${target}?`)) return;
+            if(!confirm(`⚠️ Bạn có chắc muốn TỊCH THU & KHÓA VĨNH VIỄN tài khoản: ${target}?`)) return;
             let data = await fetchAPI("admin_ban", `&target=${target}`);
-            if(data && data.status === "success") { alert("✅ Đã khóa!"); loadUsers(); }
+            if(data && data.status === "success") loadUsers();
         }
 
-        // ==========================================
-        // 4. KEY TOOL (KEYS)
-        // ==========================================
+        // 4. KEYS
         async function loadKeys() {
-            let data = await fetchAPI("admin_keys");
-            let html = "";
-            if (data && data.status === "success") {
-                data.data.forEach(k => {
-                    let badge = k.status === 'banned' ? '<span class="badge badge-banned">Banned</span>' : '<span class="badge badge-active">Active</span>';
-                    html += `<tr>
-                        <td style="color:#38bdf8; font-family:monospace; font-weight:bold;">${k.key}</td>
-                        <td>${k.user}</td>
-                        <td style="color:#94a3b8;">${new Date(k.expire).toLocaleDateString()}</td>
-                        <td>${badge}</td>
-                        <td>
-                            <button class="btn-sm btn-warning" onclick="resetHwid('${k.key}')">Reset HWID</button>
-                            <button class="btn-sm btn-danger" onclick="banKey('${k.key}')">Hủy Key</button>
-                        </td>
-                    </tr>`;
-                });
-            }
-            document.getElementById("keyTable").innerHTML = html;
-        }
-
-        async function resetHwid(key) {
-            if(!confirm(`⚠️ Bạn muốn mở khóa HWID cho Key: ${key} để khách dùng trên máy khác?`)) return;
-            let data = await fetchAPI("admin_reset_hwid", `&key=${key}`);
-            if(data && data.status === "success") { alert("✅ Đã Reset HWID thành công!"); loadKeys(); }
-        }
-
-        async function banKey(key) {
-            if(!confirm(`⚠️ Bạn muốn KHÓA Key: ${key}? Khách sẽ không thể dùng Tool được nữa.`)) return;
-            let data = await fetchAPI("admin_ban_key", `&key=${key}`);
-            if(data && data.status === "success") { alert("✅ Đã khóa Key!"); loadKeys(); }
-        }
-
-        // ==========================================
-        // THOÁT ADMIN
-        // ==========================================
-        function logout() {
-            sessionStorage.removeItem("xw_admin_pass");
-            location.reload();
-        }
-    </script>
-</body>
-</html>
+            let data =
