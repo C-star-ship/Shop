@@ -10,19 +10,16 @@
         body { background: #0b0f19; color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; overflow-x: hidden; }
         * { box-sizing: border-box; }
 
-        /* MÀN HÌNH ĐĂNG NHẬP */
         #secure-login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #06090f; z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
         .login-box { background: #121826; padding: 40px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 0 50px rgba(0, 0, 0, 0.8); width: 90%; max-width: 400px; text-align: center; }
         .login-box h2 { color: #ef4444; letter-spacing: 2px; text-transform: uppercase; margin-top: 0; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
         .login-box p { color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
         .login-box input { text-align: center; letter-spacing: 3px; font-size: 18px; }
 
-        /* MOBILE HEADER */
         .mobile-header { display: none; background: #121826; padding: 15px 20px; border-bottom: 1px solid rgba(0,255,195,0.1); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; align-items: center; justify-content: space-between; }
         .mobile-header .logo { color: #00ffc3; font-weight: 800; font-size: 20px; letter-spacing: 1px; }
         .hamburger { font-size: 26px; color: #00ffc3; cursor: pointer; }
 
-        /* SIDEBAR */
         .sidebar { width: 250px; background: #121826; height: 100vh; position: fixed; padding: 20px; border-right: 1px solid rgba(0,255,195,0.1); z-index: 999; transition: transform 0.3s ease; }
         .sidebar h2 { color: #00ffc3; text-align: center; letter-spacing: 2px; margin-bottom: 30px; font-weight: 800; text-shadow: 0 0 10px rgba(0,255,195,0.3); }
         .menu { margin-bottom: 10px; cursor: pointer; padding: 12px 15px; border-radius: 8px; background: transparent; color: #94a3b8; font-weight: 600; transition: 0.2s; border: 1px solid transparent; }
@@ -30,7 +27,6 @@
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 998; backdrop-filter: blur(2px); }
 
-        /* MAIN CONTENT & GRID */
         .main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); min-height: 100vh; overflow-y: auto; }
         .card { background: #121826; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .card h2 { margin-top: 0; color: white; font-size: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 20px; }
@@ -41,7 +37,6 @@
         .stat-box h3 { margin: 0; color: #94a3b8; font-size: 14px; text-transform: uppercase; }
         .stat-box .val { font-size: 32px; font-weight: 800; color: #00ffc3; margin-top: 10px; }
 
-        /* COMPONENTS */
         input { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-family: inherit; transition: 0.2s; }
         input:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 2px rgba(0,255,195,0.1); }
         button { padding: 14px 20px; background: #00ffc3; color: black; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; width: 100%; font-size: 15px; }
@@ -172,7 +167,6 @@
     </div>
 
     <script>
-        // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY (Giữ nguyên đuôi /exec)
         const API = "https://script.google.com/macros/s/AKfycbxuSGVqxmFI5bt7N4A0Ru3MPxHx3eZY64OHLYImNJ1OpVu5qHH8gmM2KZspklT-Rsnfzw/exec";
         
         let ADMIN_PASS = sessionStorage.getItem("xw_admin_pass") || "";
@@ -189,9 +183,6 @@
             document.getElementById('mobileOverlay').classList.toggle('show');
         }
 
-        // ==========================================
-        // LOGIN XÁC THỰC (BẢN SỬA LỖI TỐI THƯỢNG)
-        // ==========================================
         async function loginAdmin() {
             let passInput = document.getElementById("adminPassInput").value.trim();
             if (!passInput) return alert("⚠️ Bạn chưa nhập mật khẩu!");
@@ -204,21 +195,17 @@
             errBox.style.display = "none";
 
             try {
-                // Fetch trực tiếp tới API
                 let res = await fetch(`${API}?action=admin_stats&admin_pass=${passInput}`);
-                
-                // Đoạn này kiểm tra nếu Google không trả về JSON (Lỗi Deploy, Lỗi Code Sheet)
                 let textRes = await res.text();
                 
                 let data;
                 try {
                     data = JSON.parse(textRes);
                 } catch(parseErr) {
-                    alert("⚠️ CẢNH BÁO: Máy chủ Google trả về lỗi (Không phải JSON).\n\n💡 Cách sửa: Hãy Deploy (Triển khai) lại Code Google Apps Script thành phiên bản mới nhất và cập nhật lại Link API!");
+                    alert("⚠️ CẢNH BÁO: Máy chủ Google trả về lỗi.\n\n💡 Hãy kiểm tra lại Google Apps Script (Nhớ Deploy cấp quyền Anyone).");
                     throw new Error("JSON Parse Failed");
                 }
 
-                // Nếu trả về JSON hợp lệ
                 if (data.status === "success") {
                     ADMIN_PASS = passInput;
                     sessionStorage.setItem("xw_admin_pass", ADMIN_PASS);
@@ -244,7 +231,6 @@
             btn.innerText = "🔑 XÁC THỰC";
         }
 
-        // Chuyển Tab Menu
         function view(v, elm) {
             document.querySelectorAll(".view-section").forEach(e => e.style.display = "none");
             document.querySelectorAll(".menu").forEach(e => e.classList.remove("active"));
@@ -258,7 +244,6 @@
             if (v === 'keys') loadKeys();
         }
 
-        // HÀM GỌI API CHUNG
         async function fetchAPI(action, params = "") {
             document.getElementById("loadingMsg").style.display = "block";
             try {
@@ -315,7 +300,7 @@
             if (!name || !price) return alert("⚠️ Bắt buộc nhập Tên và Giá!");
 
             let btn = document.getElementById("btnAddProd");
-            btn.disabled = true; btn.innerText = "Đang đồng bộ lên Server...";
+            btn.disabled = true; btn.innerText = "Đang đồng bộ...";
             let params = `&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&desc=${encodeURIComponent(desc)}&image=${encodeURIComponent(img)}&guide=${encodeURIComponent(guide)}`;
             let data = await fetchAPI("admin_add_product", params);
             if(data && data.status === "success") {
@@ -363,4 +348,18 @@
                 data.data.forEach(k => {
                     let badge = k.status === 'banned' ? '<span class="badge badge-banned">Khóa</span>' : '<span class="badge badge-active">Hoạt động</span>';
                     html += `<tr>
-               
+                        <td style="color:#38bdf8; font-family:monospace; font-weight:bold;">${k.key}</td>
+                        <td>${k.user}</td>
+                        <td style="color:#94a3b8;">${new Date(k.expire).toLocaleDateString()}</td>
+                        <td>${badge}</td>
+                        <td>
+                            <button class="btn-sm btn-warning" onclick="resetHwid('${k.key}')">Reset Máy</button>
+                            <button class="btn-sm btn-danger" onclick="banKey('${k.key}')">Hủy Key</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            document.getElementById("keyTable").innerHTML = html;
+        }
+
+  
