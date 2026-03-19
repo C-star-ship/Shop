@@ -3,485 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XWORLD SHOP PRO</title>
+    <title>XWORLD | HỆ THỐNG MUA KEY VIP</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-        body { margin: 0; font-family: 'Inter', Arial, sans-serif; background: #0b0f19; color: #e2e8f0; line-height: 1.6; overflow-x: hidden; }
+        body { background: #0b0f19; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         * { box-sizing: border-box; }
 
-        /* NAVBAR & HAMBURGER */
-        .nav { background: rgba(18, 24, 38, 0.9); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,255,195,0.15); position: sticky; top: 0; backdrop-filter: blur(10px); z-index: 100; }
-        .logo { font-size: 24px; font-weight: 800; color: #00ffc3; cursor: pointer; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,255,195,0.3); }
-        .hamburger { font-size: 28px; color: #00ffc3; cursor: pointer; user-select: none; transition: 0.2s; }
-        .hamburger:hover { text-shadow: 0 0 10px #00ffc3; }
+        /* HEADER */
+        .header { width: 100%; background: #121826; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,255,195,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { color: #00ffc3; font-size: 24px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,195,0.3); }
+        .user-info { display: none; align-items: center; gap: 15px; }
+        .balance { background: rgba(0,255,195,0.1); color: #00ffc3; padding: 6px 12px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(0,255,195,0.3); }
+        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        /* SIDEBAR (MENU TRƯỢT) */
-        .sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100vh; background: #121826; border-left: 1px solid rgba(0,255,195,0.15); z-index: 1000; transition: 0.3s ease; padding: 25px 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow-y: auto;}
-        .sidebar.active { right: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; display: none; opacity: 0; transition: 0.3s; backdrop-filter: blur(2px); }
-        .overlay.active { display: block; opacity: 1; }
+        /* CONTAINER */
+        .container { width: 100%; max-width: 600px; padding: 30px 20px; }
+
+        /* BOX CHUNG */
+        .card { background: #121826; padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 25px; }
+        .card h2 { margin-top: 0; color: #00ffc3; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; }
+
+        /* FORM INPUT */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px; font-weight: 600; }
+        input, select { width: 100%; padding: 14px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-family: inherit; font-size: 15px; transition: 0.3s; }
+        input:focus, select:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 2px rgba(0,255,195,0.1); }
         
-        .close-btn { color: #94a3b8; font-size: 24px; text-align: right; cursor: pointer; margin-bottom: 10px; }
-        .menu-btn { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 600; font-size: 15px; width: 100%; text-align: left; margin-bottom: 12px; }
-        .menu-btn:hover { border-color: #00ffc3; color: #00ffc3; background: rgba(0, 255, 195, 0.05); }
+        button { width: 100%; padding: 15px; background: #00ffc3; color: black; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 16px; text-transform: uppercase; transition: 0.2s; }
+        button:hover:not(:disabled) { box-shadow: 0 0 20px rgba(0,255,195,0.4); transform: translateY(-2px); }
+        button:disabled { opacity: 0.6; cursor: wait; transform: none; box-shadow: none; }
 
-        /* CONTAINER & VIEWS */
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .view { display: none; animation: fadeUp 0.3s ease-out forwards; opacity: 0; transform: translateY(15px); }
-        .view.active { display: block; }
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        /* AUTH SECTIONS */
+        .auth-toggle { text-align: center; margin-top: 15px; font-size: 14px; color: #94a3b8; cursor: pointer; }
+        .auth-toggle span { color: #00ffc3; font-weight: bold; text-decoration: underline; }
 
-        /* CARDS */
-        .card { background: linear-gradient(145deg, #121826, #0f131f); border-radius: 16px; padding: 30px; border: 1px solid rgba(0,255,200,0.1); margin-bottom: 25px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .card:hover { border-color: rgba(0,255,195,0.3); box-shadow: 0 10px 40px rgba(0,255,195,0.1); }
-        .title { color: #00ffc3; margin-top: 0; margin-bottom: 15px; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* AUTH TABS & INPUTS */
-        .tabs { display: flex; border-bottom: 1px solid rgba(0,255,195,0.2); margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.3s; }
-        .tab-btn.active { color: #00ffc3; border-bottom: 2px solid #00ffc3; }
-        .form-auth { display: none; }
-        .form-auth.active { display: block; animation: fadeUp 0.3s; }
-        
-        .input-group { position: relative; margin-bottom: 15px; }
-        .input-group input { margin-bottom: 0; padding-right: 40px; }
-        .eye { position: absolute; right: 15px; top: 14px; cursor: pointer; font-size: 18px; user-select: none; opacity: 0.8; transition: 0.2s;}
-        .eye:hover { opacity: 1; transform: scale(1.1); }
-
-        input { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-size: 15px; transition: 0.2s; }
-        input:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 3px rgba(0,255,195,0.1); }
-
-        /* BUTTONS */
-        .btn { background: #00ffc3; color: #000; border: none; padding: 14px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; font-size: 15px; }
-        .btn:hover:not(:disabled) { box-shadow: 0 0 15px rgba(0,255,195,0.4); transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.6; cursor: wait; transform: none; box-shadow: none; }
-
-        /* PRODUCT GRID */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .price { font-size: 32px; font-weight: 800; color: white; margin: 20px 0; display: flex; align-items: baseline; gap: 5px; }
-        .sub { font-size: 14px; color: #94a3b8; line-height: 1.8; }
-        .feat-list { list-style: none; padding: 0; margin: 15px 0; color: #cbd5e1; }
-        .feat-list li { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .feat-list li::before { content: '✔'; color: #00ffc3; font-weight: bold; }
-
-        /* TABLE */
-        .table-wrapper { overflow-x: auto; }
+        /* HISTORY TABLE */
+        .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        th { color: #94a3b8; font-size: 13px; text-transform: uppercase; font-weight: 600; background: rgba(0,0,0,0.2); }
-        tr:hover { background: rgba(255,255,255,0.02); }
-        .badge { background: rgba(0,255,195,0.1); color: #00ffc3; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .copy-btn { background: #334155; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; }
-        .copy-btn:hover { background: #00ffc3; color: black; }
+        td, th { padding: 12px 10px; border-bottom: 1px solid #334155; text-align: left; font-size: 14px; }
+        th { color: #94a3b8; text-transform: uppercase; background: #0b0f19; }
+        .key-text { color: #38bdf8; font-family: monospace; font-weight: bold; letter-spacing: 1px; }
+
+        #loadingMsg { text-align: center; color: #00ffc3; font-style: italic; margin-bottom: 20px; font-weight: bold; display: none; }
+        .discount-box { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; padding: 10px; border-radius: 8px; color: #fbd38d; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
     </style>
 </head>
 <body>
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <div class="nav">
-        <div class="logo" onclick="v('home')">XWORLD</div>
-        <div class="hamburger" onclick="toggleMenu()">☰</div>
-    </div>
-
-    <div class="sidebar" id="sidebar">
-        <div class="close-btn" onclick="toggleMenu()">✖</div>
-        
-        <div id="side-auth">
-            <button class="menu-btn" onclick="v('auth')" style="text-align:center; border-color:#00ffc3; color:#00ffc3; margin-bottom: 20px;">🔐 Đăng Nhập / Đăng Ký</button>
-        </div>
-        
-        <div id="side-user" style="display:none; flex-direction:column; margin-bottom: 15px;">
-            <div style="background:#0b0f19; padding:15px; border-radius:8px; text-align:center; border:1px solid #334155;">
-                <div style="color:#94a3b8; font-size:12px; text-transform:uppercase;">Số dư tài khoản</div>
-                <div id="uBal" style="color:#00ffc3; font-weight:800; font-size:22px; margin-top:5px;">0 ₫</div>
-            </div>
-        </div>
-
-        <div style="display: flex; flex-direction: column;">
-            <button class="menu-btn" onclick="v('home')">🏠 Trang chủ</button>
-            <button class="menu-btn" id="menu-deposit" style="display:none;" onclick="v('deposit')">💳 Nạp tiền vào Tài khoản</button>
-            <button class="menu-btn" id="menu-history" style="display:none;" onclick="v('history')">📋 Lịch sử mua trên shop</button>
-            <button class="menu-btn" onclick="contactAdmin()">🎧 Liên hệ Admin</button>
-        </div>
-
-        <div id="side-logout" style="display:none; margin-top:auto;">
-            <button class="menu-btn" onclick="logout()" style="color:#ef4444; border-color:rgba(239,68,68,0.3); text-align:center; margin-top: 20px;">🚪 Đăng xuất</button>
+    <div class="header">
+        <div class="logo">XWORLD</div>
+        <div class="user-info" id="userInfo">
+            <div class="balance" id="displayBalance">0 ₫</div>
+            <button class="btn-logout" onclick="logout()">Thoát</button>
         </div>
     </div>
 
     <div class="container">
-        
-        <div id="v-home" class="view active">
-            <div class="grid">
-                <div class="card">
-                    <h3 class="title">TOOL GOLIKE PRO</h3>
-                    <p class="sub">Hệ thống Auto Golike đỉnh cao với công nghệ bảo mật độc quyền.</p>
-                    <ul class="feat-list">
-                        <li>Bypass chống Ban siêu mượt</li>
-                        <li>Trói Key HWID bảo vệ thiết bị</li>
-                        <li>Tự động nhận & làm nhiệm vụ</li>
-                    </ul>
-                    <div class="price">1,000<span style="font-size:18px;">₫</span> <span class="sub">/ ngày</span></div>
-                    <button class="btn" style="margin-top:10px" onclick="v('buy')">🛒 Mua Ngay</button>
-                </div>
+        <div id="loadingMsg">⏳ Đang xử lý...</div>
+
+        <div id="authSection" class="card">
+            <h2 id="authTitle">Đăng Nhập Hệ Thống</h2>
+            
+            <div class="input-group">
+                <label>Tài khoản</label>
+                <input type="text" id="authUsername" placeholder="Nhập tài khoản (viết liền không dấu)" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="authPassword" placeholder="••••••••">
+            </div>
+            
+            <button id="btnAuth" onclick="handleAuth()">Đăng Nhập Ngay</button>
+            <div class="auth-toggle" onclick="toggleAuthMode()">
+                Chưa có tài khoản? <span id="authSwitchText">Đăng ký ngay</span>
             </div>
         </div>
 
-        <div id="v-auth" class="view">
-            <div class="card" style="max-width:420px; margin:auto; padding-top:20px;">
-                <h2 style="text-align:center; color:#00ffc3; margin-top:0;">TÀI KHOẢN</h2>
-                
-                <div class="tabs">
-                    <button class="tab-btn active" id="tabLogin" onclick="setTab('login')">Đăng nhập</button>
-                    <button class="tab-btn" id="tabReg" onclick="setTab('register')">Đăng ký mới</button>
+        <div id="shopSection" style="display: none;">
+            
+            <div class="card" style="border-color: #3b82f6;">
+                <h2 style="color: #3b82f6;">NẠP TIỀN VÀO TÀI KHOẢN</h2>
+                <div style="text-align: center; line-height: 1.6;">
+                    Ngân hàng: <strong>MB BANK</strong><br>
+                    STK: <strong style="color: white; font-size: 18px;">123456789</strong><br>
+                    Tên: <strong>NGUYEN VAN A</strong><br>
+                    Nội dung CK: <strong style="color: #00ffc3; font-size: 18px; background: #0b0f19; padding: 4px 8px; border-radius: 4px;">NAP <span id="napSyntax"></span></strong>
                 </div>
-
-                <div id="form-login" class="form-auth active">
-                    <input id="lUser" placeholder="Tên tài khoản (Viết liền không dấu)">
-                    <div class="input-group">
-                        <input id="lPass" type="password" placeholder="Mật khẩu bảo mật">
-                        <span class="eye" onclick="togPass('lPass')">👁️</span>
-                    </div>
-                    <button class="btn" id="btnLogin" onclick="doLogin()">Đăng Nhập</button>
+                <div style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 10px;">
+                    * Hệ thống cộng tiền tự động sau 1-3 phút.
                 </div>
-
-                <div id="form-register" class="form-auth">
-                    <input id="rUser" placeholder="Tên tài khoản mới (Không dấu)">
-                    <div class="input-group">
-                        <input id="rPass" type="password" placeholder="Mật khẩu (Từ 8 ký tự)">
-                        <span class="eye" onclick="togPass('rPass')">👁️</span>
-                    </div>
-                    <div class="input-group">
-                        <input id="rConf" type="password" placeholder="Xác nhận lại mật khẩu">
-                        <span class="eye" onclick="togPass('rConf')">👁️</span>
-                    </div>
-                    <button class="btn" id="btnReg" style="background:transparent; color:#00ffc3; border:2px solid #00ffc3;" onclick="doReg()">Tạo Tài Khoản</button>
-                </div>
-
             </div>
-        </div>
 
-        <div id="v-buy" class="view">
-            <div class="card" style="max-width:420px; margin:auto;">
-                <h2 class="title">MUA KEY GOLIKE</h2>
-                <div style="background:rgba(0,255,195,0.05); padding:15px; border-radius:8px; margin-bottom:20px; border:1px dashed rgba(0,255,195,0.2);">
-                    <p style="margin:0; color:#cbd5e1; font-size:14px;">🔥 <strong>ƯU ĐÃI ĐẶC BIỆT:</strong></p>
-                    <ul style="margin:5px 0 0 0; padding-left:20px; color:#94a3b8; font-size:13px;">
-                        <li>Mua > 7 ngày: <strong>Giảm 15%</strong></li>
-                        <li>Mua > 20 ngày: <strong>Giảm 20%</strong></li>
-                        <li>Mua > 30 ngày: <strong>Giảm 25%</strong></li>
-                    </ul>
-                </div>
-                
-                <input id="days" type="number" placeholder="Nhập số ngày muốn mua..." oninput="calcPrice()">
-                
-                <div style="margin:20px 0; font-size:18px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:#94a3b8;">Tổng thanh toán:</span>
-                    <strong id="priceTotal" style="color:#00ffc3; font-size:24px;">0 ₫</strong>
-                </div>
-                
-                <button class="btn" id="btnBuy" onclick="buy()">💳 Xác Nhận Mua</button>
-            </div>
-        </div>
-
-        <div id="v-history" class="view">
             <div class="card">
-                <h2 class="title">LỊCH SỬ MUA TRÊN SHOP</h2>
-                <div id="histLoad" style="color:#00ffc3; text-align:center; padding:20px; font-style:italic;">Đang tải dữ liệu từ máy chủ...</div>
+                <h2>MUA KEY GOLIKE PRO</h2>
                 
-                <div class="table-wrapper">
+                <div class="discount-box">
+                    🔥 <strong>ƯU ĐÃI ĐẶC BIỆT:</strong><br>
+                    - Mua > 7 ngày: Giảm 15%<br>
+                    - Mua > 20 ngày: Giảm 20%<br>
+                    - Mua > 30 ngày: Giảm 25%
+                </div>
+
+                <div class="input-group">
+                    <label>Chọn sản phẩm</label>
+                    <select id="productSelect">
+                        <option value="1">Đang tải sản phẩm...</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Số ngày muốn mua</label>
+                    <input type="number" id="buyDays" placeholder="VD: 30" min="1" value="1">
+                </div>
+
+                <button id="btnBuy" onclick="buyKey()">🛒 XÁC NHẬN MUA</button>
+            </div>
+
+            <div class="card">
+                <h2>LỊCH SỬ KEY CỦA BẠN</h2>
+                <div class="table-wrap">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Mã Key VIP</th>
-                                <th>Ngày Hết Hạn</th>
-                                <th>Trạng Thái</th>
-                                <th>Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="histBody"></tbody>
+                        <thead><tr><th>Mã Key VIP</th><th>Thời hạn</th><th>Trạng thái</th></tr></thead>
+                        <tbody id="historyTable">
+                            <tr><td colspan="3" style="text-align:center;">Chưa có dữ liệu</td></tr>
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <div id="v-deposit" class="view">
-            <div class="card" style="max-width:450px; margin:auto; text-align:center;">
-                <h2 class="title">NẠP TIỀN TỰ ĐỘNG</h2>
-                <p class="sub" style="margin-bottom:20px;">Mở App Ngân hàng và quét mã QR bên dưới. Hệ thống sẽ tự động cộng tiền trong 30 giây.</p>
-                
-                <div style="background:white; padding:15px; border-radius:12px; display:inline-block; margin-bottom:20px;">
-                    <img id="qrImage" src="" style="width:220px; display:block; border-radius:8px;">
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="check.html" style="color: #00ffc3; text-decoration: none; font-weight: bold; font-size: 14px;">🔍 Tra cứu chi tiết Key</a>
                 </div>
-                
-                <p style="color:#ef4444; font-size:13px; font-weight:bold;">⚠️ Bắt buộc giữ nguyên nội dung chuyển khoản!</p>
-                
-                <button class="btn" id="btnRef" onclick="refreshBal()">🔄 Đã chuyển khoản? Bấm cập nhật số dư</button>
             </div>
+            
         </div>
-
     </div>
 
     <script>
-        // ⚠️ THAY LINK API CỦA BẠN VÀO ĐÂY NHÉ
+        // ⚠️ DÁN LINK API CỦA BẠN VÀO ĐÂY:
         const API = "https://script.google.com/macros/s/AKfycbxuSGVqxmFI5bt7N4A0Ru3MPxHx3eZY64OHLYImNJ1OpVu5qHH8gmM2KZspklT-Rsnfzw/exec";
 
-        let user = localStorage.getItem("shop_u") || "";
-        let pass = localStorage.getItem("shop_p") || "";
-        let bal = 0;
+        let currentUser = localStorage.getItem("xw_user") || "";
+        let currentPass = localStorage.getItem("xw_pass") || "";
+        let isLoginMode = true;
 
-        // Bật/Tắt Menu Sidebar
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            let overlay = document.getElementById('overlay');
-            if (overlay.classList.contains('active')) {
-                overlay.classList.remove('active');
-                setTimeout(() => { overlay.style.display = 'none'; }, 300);
-            } else {
-                overlay.style.display = 'block';
-                setTimeout(() => { overlay.classList.add('active'); }, 10);
+        window.onload = () => {
+            if (currentUser && currentPass) {
+                // Nếu đã lưu tài khoản thì tự động đăng nhập ngầm
+                login(currentUser, currentPass);
+            }
+        };
+
+        // ==========================================
+        // 1. CHUYỂN ĐỔI ĐĂNG NHẬP / ĐĂNG KÝ
+        // ==========================================
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById("authTitle").innerText = isLoginMode ? "Đăng Nhập Hệ Thống" : "Tạo Tài Khoản Mới";
+            document.getElementById("btnAuth").innerText = isLoginMode ? "Đăng Nhập Ngay" : "Đăng Ký Tài Khoản";
+            document.getElementById("authSwitchText").innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập ngay";
+        }
+
+        async function handleAuth() {
+            let u = document.getElementById("authUsername").value.trim();
+            let p = document.getElementById("authPassword").value.trim();
+
+            if (!u || !p) return alert("⚠️ Vui lòng điền đủ Tài khoản và Mật khẩu!");
+            if (p.length < 8) return alert("⚠️ Mật khẩu phải từ 8 ký tự trở lên!");
+            
+            let btn = document.getElementById("btnAuth");
+            btn.disabled = true; btn.innerText = "Đang xử lý...";
+
+            try {
+                let action = isLoginMode ? "login" : "register";
+                let res = await fetch(`${API}?action=${action}&user=${u}&pass=${p}`);
+                let data = await res.json();
+
+                if (data.status === "success") {
+                    if (!isLoginMode) {
+                        alert("✅ Đăng ký thành công! Đang tự động đăng nhập...");
+                        isLoginMode = true;
+                    }
+                    login(u, p); // Gọi hàm đăng nhập
+                } else {
+                    alert("❌ Lỗi: " + data.message);
+                    btn.disabled = false; btn.innerText = isLoginMode ? "Đăng Nhập Ngay" : "Đăng Ký Tài Khoản";
+                }
+            } catch (e) {
+                alert("❌ Lỗi kết nối đến máy chủ!");
+                btn.disabled = false; btn.innerText = isLoginMode ? "Đăng Nhập Ngay" : "Đăng Ký Tài Khoản";
             }
         }
 
-        // Auto login khi mở web
-        window.onload = () => { if(user && pass) doLogin(true); };
-
-        // Liên hệ Admin
-        function contactAdmin() {
-            toggleMenu(); // Đóng menu lại
-            
-            // ⚠️ Thay Link Zalo / Facebook của bạn vào dòng dưới:
-            let adminLink = "https://zalo.me/0123456789"; 
-            
-            if(confirm("Hệ thống sẽ chuyển hướng đến trang liên hệ Admin (Zalo/Facebook). Tiếp tục?")) {
-                window.open(adminLink, '_blank');
-            }
-        }
-
-        // Điều hướng các trang
-        function v(id) {
-            document.querySelectorAll(".view").forEach(e => e.classList.remove("active"));
-            document.getElementById("v-" + id).classList.add("active");
-            
-            // Đóng menu nếu đang mở
-            if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-            
-            if (id === "history") loadHist();
-            if (id === "deposit") {
-                if (!user) return v("auth");
-                document.getElementById("qrImage").src = `https://img.vietqr.io/image/MB-0364675622-compact.png?addInfo=NAP ${user}`;
-            }
-            window.scrollTo(0,0);
-        }
-
-        // Chuyển Tab Đăng nhập / Đăng ký
-        function setTab(t) {
-            document.querySelectorAll('.form-auth').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-            if(t === 'login') {
-                document.getElementById('form-login').classList.add('active');
-                document.getElementById('tabLogin').classList.add('active');
-            } else {
-                document.getElementById('form-register').classList.add('active');
-                document.getElementById('tabReg').classList.add('active');
-            }
-        }
-
-        // Tắt mở Mắt xem Mật khẩu
-        function togPass(id) {
-            let x = document.getElementById(id);
-            x.type = x.type === "password" ? "text" : "password";
-        }
-
-        // Cập nhật UI Menu Sidebar
-        function setUI(u, b) {
-            document.getElementById("side-auth").style.display = "none";
-            
-            document.getElementById("side-user").style.display = "flex";
-            document.getElementById("menu-deposit").style.display = "block";
-            document.getElementById("menu-history").style.display = "block";
-            document.getElementById("side-logout").style.display = "block";
-            
-            document.getElementById("uBal").innerText = Number(b).toLocaleString() + " ₫";
-        }
-
-        // Tính tiền Real-time
-        function calcPrice() {
-            let d = parseInt(document.getElementById("days").value) || 0;
-            let base = d * 1000;
-            let p = d > 30 ? base * 0.75 : d > 20 ? base * 0.8 : d > 7 ? base * 0.85 : base;
-            document.getElementById("priceTotal").innerText = Math.round(p).toLocaleString() + " ₫";
-        }
-
-        // Xử lý Đăng Nhập
-        async function doLogin(silent = false) {
-            let u = silent ? user : document.getElementById("lUser").value.trim();
-            let p = silent ? pass : document.getElementById("lPass").value;
-
-            if (!u || !p) return alert("Vui lòng nhập đầy đủ Tài khoản và Mật khẩu!");
-
-            let btnLogin = document.getElementById("btnLogin");
-            if (!silent) {
-                btnLogin.disabled = true;
-                btnLogin.innerText = "⏳ Đang kết nối...";
-            }
-
+        async function login(u, p) {
+            document.getElementById("loadingMsg").style.display = "block";
             try {
                 let res = await fetch(`${API}?action=login&user=${u}&pass=${p}`);
-                let d = await res.json();
+                let data = await res.json();
+                
+                document.getElementById("loadingMsg").style.display = "none";
 
-                if (d.status === "success") {
-                    user = u; pass = p; bal = d.balance;
-                    localStorage.setItem("shop_u", u);
-                    localStorage.setItem("shop_p", p);
-                    setUI(user, bal);
-                    if (!silent) {
-                        alert("✅ Đăng nhập thành công!");
-                        v("home");
-                    }
+                if (data.status === "success") {
+                    // Lưu cấu hình
+                    currentUser = u; currentPass = p;
+                    localStorage.setItem("xw_user", u);
+                    localStorage.setItem("xw_pass", p);
+
+                    // Đổi Giao diện
+                    document.getElementById("authSection").style.display = "none";
+                    document.getElementById("shopSection").style.display = "block";
+                    document.getElementById("userInfo").style.display = "flex";
+                    
+                    // Cập nhật thông tin
+                    document.getElementById("displayBalance").innerText = Number(data.balance).toLocaleString() + " ₫";
+                    document.getElementById("napSyntax").innerText = u.toUpperCase();
+
+                    // Tải dữ liệu Shop
+                    loadProducts();
+                    loadHistory();
                 } else {
-                    if (!silent) alert("❌ Lỗi: " + d.message);
-                    else logout();
+                    alert("⚠️ Phiên đăng nhập hết hạn hoặc sai mật khẩu!");
+                    logout();
                 }
             } catch (e) {
-                if (!silent) alert("❌ Lỗi kết nối đến máy chủ.");
-            }
-
-            if (!silent) {
-                btnLogin.disabled = false;
-                btnLogin.innerText = "Đăng Nhập";
+                document.getElementById("loadingMsg").style.display = "none";
+                alert("❌ Lỗi mạng: Không thể đăng nhập.");
             }
         }
 
-        // Xử lý Đăng Ký
-        async function doReg() {
-            let u = document.getElementById("rUser").value.trim();
-            let p = document.getElementById("rPass").value;
-            let c = document.getElementById("rConf").value;
-
-            if (!u || !p || !c) return alert("Vui lòng nhập đầy đủ thông tin!");
-            if (p !== c) return alert("❌ Mật khẩu xác nhận không khớp!");
-            if (p.length < 8) return alert("❌ Mật khẩu phải từ 8 ký tự trở lên!");
-
-            let btnReg = document.getElementById("btnReg");
-            btnReg.disabled = true;
-            btnReg.innerText = "⏳ Đang tạo tài khoản...";
-
+        // ==========================================
+        // 2. SHOP & MUA KEY
+        // ==========================================
+        async function loadProducts() {
             try {
-                let res = await fetch(`${API}?action=register&user=${u}&pass=${p}`);
-                let d = await res.json();
-
-                if (d.status === "success") {
-                    alert("✅ Đăng ký thành công! Hệ thống sẽ tự động đăng nhập.");
-                    document.getElementById("lUser").value = u;
-                    document.getElementById("lPass").value = p;
-                    doLogin();
+                let res = await fetch(`${API}?action=products`);
+                let data = await res.json();
+                if (data.status === "success" && data.data.length > 0) {
+                    let html = "";
+                    data.data.forEach(p => {
+                        html += `<option value="${p.id}">${p.name} - ${Number(p.price).toLocaleString()} ₫/ngày</option>`;
+                    });
+                    document.getElementById("productSelect").innerHTML = html;
                 } else {
-                    alert("❌ Lỗi: " + d.message);
-                }
-            } catch (e) {
-                alert("❌ Lỗi kết nối đến máy chủ.");
-            }
-
-            btnReg.disabled = false;
-            btnReg.innerText = "Tạo Tài Khoản";
-        }
-
-        // Xử lý Mua Key
-        async function buy() {
-            let d = parseInt(document.getElementById("days").value);
-            if (!d || d <= 0) return alert("⚠️ Vui lòng nhập số ngày hợp lệ!");
-            if (!user) { alert("⚠️ Vui lòng đăng nhập trước khi mua!"); return v("auth"); }
-
-            let btnBuy = document.getElementById("btnBuy");
-            btnBuy.disabled = true;
-            btnBuy.innerText = "⏳ Đang tạo Key...";
-
-            try {
-                let res = await fetch(`${API}?action=buy&user=${user}&pass=${pass}&days=${d}`);
-                let r = await res.json();
-
-                if (r.status === "success") {
-                    bal = r.new_balance;
-                    setUI(user, bal);
-                    alert("✅ Mua Key thành công! Vui lòng vào mục Lịch sử để Copy Key.");
-                    document.getElementById("days").value = "";
-                    calcPrice();
-                    v("history");
-                } else {
-                    alert("❌ Lỗi: " + r.message);
-                }
-            } catch (e) {
-                alert("❌ Lỗi mạng. Vui lòng thử lại sau!");
-            }
-
-            btnBuy.disabled = false;
-            btnBuy.innerText = "💳 Xác Nhận Mua";
-        }
-
-        // Xử lý Tải Lịch sử
-        async function loadHist() {
-            if (!user) return;
-            document.getElementById("histLoad").style.display = "block";
-            document.getElementById("histBody").innerHTML = "";
-
-            try {
-                let res = await fetch(`${API}?action=history&user=${user}&pass=${pass}`);
-                let r = await res.json();
-                let h = "";
-
-                if (r.status === "success") {
-                    if(r.data.length === 0) {
-                        h = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Bạn chưa mua Key nào.</td></tr>`;
-                    } else {
-                        r.data.forEach(k => {
-                            let statusStyle = k.status === 'banned' ? 'background:rgba(239,68,68,0.1); color:#ef4444;' : '';
-                            h += `
-                            <tr>
-                                <td style="font-family:monospace; color:#38bdf8; font-size:15px; font-weight:bold;">${k.key}</td>
-                                <td style="color:#cbd5e1;">${new Date(k.expire).toLocaleDateString('vi-VN')}</td>
-                                <td><span class="badge" style="${statusStyle}">${k.status}</span></td>
-                                <td><button class="copy-btn" onclick="copyText('${k.key}')">📋 Copy</button></td>
-                            </tr>`;
-                        });
-                    }
-                    document.getElementById("histBody").innerHTML = h;
+                    document.getElementById("productSelect").innerHTML = '<option value="">Tạm hết hàng</option>';
                 }
             } catch(e) {}
-            
-            document.getElementById("histLoad").style.display = "none";
         }
 
-        // Xử lý Cập nhật tiền
-        async function refreshBal() {
-            let btnRef = document.getElementById("btnRef");
-            btnRef.disabled = true;
-            btnRef.innerText = "⏳ Đang kiểm tra...";
+        async function buyKey() {
+            let pid = document.getElementById("productSelect").value;
+            let daysInput = document.getElementById("buyDays").value.trim();
+            
+            // XỬ LÝ MẶC ĐỊNH SỐ NGÀY: Chống lỗi khách nhập tào lao
+            let days = parseInt(daysInput);
+            if (isNaN(days) || days <= 0) {
+                days = 1; // Mặc định tự gán bằng 1
+                document.getElementById("buyDays").value = 1; 
+            }
+
+            if (!pid) return alert("⚠️ Cửa hàng đang cập nhật sản phẩm!");
+            if (!confirm(`Xác nhận mua Key cho ${days} ngày? Hệ thống sẽ trừ tiền trong tài khoản của bạn.`)) return;
+
+            let btn = document.getElementById("btnBuy");
+            btn.disabled = true; btn.innerText = "⏳ Đang tạo Key...";
 
             try {
-                let res = await fetch(`${API}?action=login&user=${user}&pass=${pass}`);
-                let d = await res.json();
-                if (d.status === "success") {
-                    bal = d.balance;
-                    setUI(user, bal);
-                    alert("✅ Cập nhật số dư thành công!");
+                let res = await fetch(`${API}?action=buy&user=${currentUser}&pass=${currentPass}&days=${days}&product_id=${pid}`);
+                let data = await res.json();
+
+                if (data.status === "success") {
+                    alert(`✅ MUA THÀNH CÔNG!\n\nMã Key của bạn là:\n${data.key}\n\nHãy copy mã này dán vào Tool để sử dụng.`);
+                    document.getElementById("displayBalance").innerText = Number(data.new_balance).toLocaleString() + " ₫";
+                    loadHistory(); // Load lại bảng lịch sử cho khách thấy key mới
+                } else {
+                    alert("❌ Lỗi: " + data.message);
                 }
-            } catch(e) { alert("❌ Lỗi kết nối!"); }
+            } catch (e) {
+                alert("❌ Lỗi mạng: Không thể giao dịch.");
+            }
 
-            btnRef.disabled = false;
-            btnRef.innerText = "🔄 Đã chuyển khoản? Bấm cập nhật số dư";
+            btn.disabled = false; btn.innerText = "🛒 XÁC NHẬN MUA";
         }
 
-        // Tiện ích Copy
-        function copyText(text) {
-            navigator.clipboard.writeText(text);
-            alert("✅ Đã copy Key vào bộ nhớ tạm: " + text);
+        // ==========================================
+        // 3. LỊCH SỬ MUA HÀNG
+        // ==========================================
+        async function loadHistory() {
+            try {
+                let res = await fetch(`${API}?action=history&user=${currentUser}`);
+                let data = await res.json();
+                let html = "";
+                
+                if (data.status === "success" && data.data.length > 0) {
+                    data.data.forEach(k => {
+                        let isExpired = new Date() > new Date(k.expire);
+                        let statusText = k.status === 'banned' ? '<span style="color:#ef4444">Bị Khóa</span>' : (isExpired ? '<span style="color:#f59e0b">Hết Hạn</span>' : '<span style="color:#10b981">Hoạt Động</span>');
+                        
+                        html += `<tr>
+                            <td class="key-text">${k.key}</td>
+                            <td style="color:#94a3b8">${k.days} ngày</td>
+                            <td>${statusText}</td>
+                        </tr>`;
+                    });
+                } else {
+                    html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">Bạn chưa mua Key nào.</td></tr>';
+                }
+                document.getElementById("historyTable").innerHTML = html;
+            } catch (e) {}
         }
 
-        // Đăng xuất
+        // ==========================================
+        // THOÁT
+        // ==========================================
         function logout() {
-            localStorage.clear();
+            localStorage.removeItem("xw_user");
+            localStorage.removeItem("xw_pass");
             location.reload();
         }
     </script>
