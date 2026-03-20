@@ -362,4 +362,56 @@
             lastClick = Date.now();
             
             let pid = document.getElementById("productSelect").value || 1;
-            let days = 
+            let days = parseInt(document.getElementById("buyDays").value);
+            if (!days || days < 1) days = 1;
+
+            toggleLoading("btnBuy", "buySpinner", "buyBtnText", true, "🛒 XÁC NHẬN THANH TOÁN");
+
+            let data = await fetchAPI({ action: "buy", days: days, product_id: pid });
+
+            if (data.status === "success") {
+                document.getElementById("displayBalance").innerText = Number(data.new_balance).toLocaleString() + " ₫";
+                document.getElementById("modalKeyText").innerText = data.key;
+                document.getElementById("successModal").style.display = "flex";
+                
+                navigator.clipboard.writeText(data.key);
+                showMsg("✅ Mua thành công! Đã copy Key.", "success");
+                
+                loadHistory();
+            } else if (data.status === "unauthorized") { 
+                showMsg("⚠️ Phiên hết hạn!"); 
+                logout(); 
+            } else { 
+                showMsg("❌ " + data.message); 
+            }
+            
+            toggleLoading("btnBuy", "buySpinner", "buyBtnText", false, "🛒 XÁC NHẬN THANH TOÁN");
+        }
+
+        async function loadHistory() {
+            let data = await fetchAPI({ action: "history" });
+            let html = "";
+            if (data.status === "success" && data.data.length > 0) {
+                data.data.forEach(k => {
+                    let isExp = new Date() > new Date(k.expire);
+                    let stat = k.status === 'banned' ? '<span style="color:#ef4444">Bị Khóa</span>' : (isExp ? '<span style="color:#f59e0b">Hết Hạn</span>' : '<span style="color:#10b981">Active</span>');
+                    
+                    html += `<tr>
+                        <td class="key-text" onclick="navigator.clipboard.writeText('${k.key}'); showMsg('Đã copy Key!', 'success');" title="Bấm để Copy">${k.key}</td>
+                        <td style="color:#94a3b8">${k.days} ngày</td>
+                        <td>${stat}</td>
+                    </tr>`;
+                });
+            } else { 
+                html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding: 20px;">Bạn chưa mua Key nào.</td></tr>'; 
+            }
+            document.getElementById("historyTable").innerHTML = html;
+        }
+
+        function openDeposit() { document.getElementById("depositModal").style.display = "flex"; }
+        function closeDeposit() { document.getElementById("depositModal").style.display = "none"; }
+        function closeModal() { document.getElementById("successModal").style.display = "none"; }
+        function logout() { localStorage.removeItem("xw_token"); location.reload(); }
+    </script>
+</body>
+</html>
