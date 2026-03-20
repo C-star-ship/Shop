@@ -350,4 +350,37 @@
                     let isExp = new Date() > new Date(k.expire);
                     let badge = k.status === 'banned' ? '<span class="badge badge-banned">Khóa</span>' : (isExp ? '<span class="badge badge-banned" style="background:rgba(245,158,11,0.1);color:#f59e0b;border-color:rgba(245,158,11,0.2)">Hết Hạn</span>' : '<span class="badge badge-active">Hoạt động</span>');
                     html += `<tr>
-                        <td style="color:#38bdf8; font-family:monospace
+                        <td style="color:#38bdf8; font-family:monospace; font-weight:bold; letter-spacing:1px;">${k.key}</td>
+                        <td>${k.user}</td>
+                        <td style="color:#94a3b8;">${new Date(k.expire).toLocaleDateString()}</td>
+                        <td>${badge}</td>
+                        <td>
+                            <button class="btn-sm btn-warning" onclick="resetHwid('${k.key}')">Mở HWID</button>
+                            <button class="btn-sm btn-danger" onclick="banKey('${k.key}')">Hủy Key</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            document.getElementById("keyTable").innerHTML = html;
+        }
+
+        async function resetHwid(key) {
+            if(!confirm(`⚠️ Mở khóa HWID cho Key: ${key} để người dùng đổi máy tính?`)) return;
+            let data = await fetchAPI("admin_reset_hwid", `&key=${key}`);
+            if(data && data.status === "success") { showMsg("✅ Đã mở HWID", "success"); loadKeys(); }
+        }
+
+        async function banKey(key) {
+            if(!confirm(`⚠️ HỦY BỎ Key: ${key}? Khách sẽ không thể xài tool nữa.`)) return;
+            let data = await fetchAPI("admin_ban_key", `&key=${key}`);
+            if(data && data.status === "success") { showMsg("✅ Đã hủy Key", "success"); loadKeys(); }
+        }
+
+        // THOÁT
+        function logout() {
+            sessionStorage.removeItem("xw_admin_pass");
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
