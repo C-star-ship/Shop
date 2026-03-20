@@ -21,24 +21,31 @@
         .btn-logout:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
 
         .container { width: 100%; max-width: 500px; padding: 40px 20px; }
-        .card { background: #121826; padding: 35px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-bottom: 25px; }
-        .card h2 { margin-top: 0; color: #00ffc3; text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 25px; }
+        .card { background: #121826; padding: 35px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-bottom: 25px; transition: all 0.3s ease; }
+        .card h2 { margin-top: 0; color: #00ffc3; text-align: center; font-size: 22px; letter-spacing: 1px; margin-bottom: 5px; }
+        .auth-subtitle { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
 
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; margin-bottom: 10px; color: #94a3b8; font-size: 14px; font-weight: 600; }
         input, select { width: 100%; padding: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 10px; font-family: inherit; font-size: 15px; transition: 0.3s; }
-        input:focus, select:focus { border-color: #00ffc3; outline: none; }
+        input:focus, select:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 2px rgba(0,255,195,0.1); }
         
-        button { width: 100%; padding: 16px; background: #00ffc3; color: black; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 16px; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        /* WRAPPER CHO Ô MẬT KHẨU CÓ MẮT XEM */
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .password-wrapper input { padding-right: 45px; }
+        .toggle-pw { position: absolute; right: 15px; font-size: 18px; cursor: pointer; color: #94a3b8; user-select: none; transition: 0.2s; }
+        .toggle-pw:hover { transform: scale(1.1); }
+
+        button { width: 100%; padding: 16px; background: #00ffc3; color: black; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 16px; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
         button:hover:not(:disabled) { box-shadow: 0 0 20px rgba(0,255,195,0.4); transform: translateY(-2px); }
         button:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* LOADING SPINNER CSS */
         .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .link-text { text-align: center; margin-top: 20px; font-size: 14px; color: #94a3b8; cursor: pointer; }
-        .link-text span { color: #00ffc3; font-weight: bold; }
+        .link-text { text-align: center; margin-top: 25px; font-size: 14px; color: #94a3b8; }
+        .link-text span { color: #00ffc3; font-weight: bold; cursor: pointer; text-decoration: none; padding: 5px; }
+        .link-text span:hover { text-decoration: underline; }
 
         .price-calc-box { background: rgba(0, 255, 195, 0.05); border: 1px dashed rgba(0, 255, 195, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none; }
         .price-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: #94a3b8; }
@@ -98,26 +105,43 @@
         
         <div id="authSection" class="card">
             <h2 id="authTitle">ĐĂNG NHẬP HỆ THỐNG</h2>
+            <div class="auth-subtitle" id="authSubtitle">Chào mừng bạn quay trở lại</div>
+
             <div class="input-group">
                 <label>Tài khoản</label>
-                <input type="text" id="authUsername" placeholder="ID của bạn" autocomplete="off">
+                <input type="text" id="authUsername" placeholder="Ví dụ: nguyenvan_a" autocomplete="off">
             </div>
+            
             <div class="input-group">
                 <label>Mật khẩu</label>
-                <input type="password" id="authPassword" placeholder="••••••••">
+                <div class="password-wrapper">
+                    <input type="password" id="authPassword" placeholder="Ít nhất 8 ký tự">
+                    <span class="toggle-pw" onclick="togglePass('authPassword', this)" title="Hiện/Ẩn mật khẩu">👁️</span>
+                </div>
             </div>
+
+            <div class="input-group" id="confirmPassGroup" style="display: none;">
+                <label>Nhập lại mật khẩu</label>
+                <div class="password-wrapper">
+                    <input type="password" id="authConfirmPassword" placeholder="Xác nhận lại mật khẩu">
+                    <span class="toggle-pw" onclick="togglePass('authConfirmPassword', this)" title="Hiện/Ẩn mật khẩu">👁️</span>
+                </div>
+            </div>
+
             <button id="btnAuth" onclick="handleAuth()">
                 <span class="spinner" id="authSpinner"></span>
                 <span id="authBtnText">ĐĂNG NHẬP</span>
             </button>
-            <div class="link-text" onclick="toggleAuthMode()">Chưa có tài khoản? <span id="authSwitchText">Đăng ký ngay</span></div>
+            <div class="link-text">
+                <span id="authSwitchPrompt" style="color:#94a3b8; font-weight:normal; cursor:default;">Chưa có tài khoản?</span> 
+                <span id="authSwitchText" onclick="toggleAuthMode()">Đăng ký ngay</span>
+            </div>
         </div>
 
         <div id="shopSection" style="display: none;">
             
             <div class="card">
                 <h2>MUA KEY GOLIKE</h2>
-                
                 <div class="input-group">
                     <label>Sản phẩm</label>
                     <select id="productSelect" onchange="calcPrice()">
@@ -159,13 +183,12 @@
 
     <script>
         // ⚠️ THAY LINK API VÀO ĐÂY:
-        const API = "https://script.google.com/macros/s/AKfycbxTGUmXZ3S9m61IwS2dcYNBKDtAgAD808p48WKhudJJTOtU0sa7kUAVA4DrbJCKIGBVhQ/exec";
+        const API = "https://script.google.com/macros/s/AKfycbxuSGVqxmFI5bt7N4A0Ru3MPxHx3eZY64OHLYImNJ1OpVu5qHH8gmM2KZspklT-Rsnfzw/exec";
 
         let isLoginMode = true;
         let lastClick = 0; 
         let currentUserName = "";
 
-        // AUTO LOGIN KIỂM TRA TOKEN
         window.onload = async () => { 
             let token = localStorage.getItem("xw_token");
             if (token) {
@@ -179,7 +202,6 @@
             }
         };
 
-        // HÀM HIỂN THỊ THÔNG BÁO XỊN
         function showMsg(text, type = "error") {
             let box = document.getElementById("customMsg");
             box.innerText = text; 
@@ -188,36 +210,54 @@
             setTimeout(() => { box.style.display = "none"; }, 3000);
         }
 
-        // HÀM ĐỔI CHẾ ĐỘ ĐĂNG NHẬP / ĐĂNG KÝ
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById("authTitle").innerText = isLoginMode ? "ĐĂNG NHẬP" : "ĐĂNG KÝ MỚI";
-            document.getElementById("authBtnText").innerText = isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN";
-            document.getElementById("authSwitchText").innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập ngay";
+        // TÍNH NĂNG MỚI: ẨN / HIỆN MẬT KHẨU
+        function togglePass(inputId, icon) {
+            let input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.innerText = "🙈"; // Đổi icon sang nhắm mắt
+            } else {
+                input.type = "password";
+                icon.innerText = "👁️"; // Đổi icon sang mở mắt
+            }
         }
 
-        // ==============================================================
-        // BẢO MẬT TỐI THƯỢNG: KÝ REQUEST CHỐNG TOOL & REPLAY
-        // ==============================================================
+        // TÍNH NĂNG MỚI: ĐỔI GIAO DIỆN ĐĂNG KÝ VÀ ĐĂNG NHẬP
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            
+            // Đổi Text
+            document.getElementById("authTitle").innerText = isLoginMode ? "ĐĂNG NHẬP HỆ THỐNG" : "TẠO TÀI KHOẢN MỚI";
+            document.getElementById("authSubtitle").innerText = isLoginMode ? "Chào mừng bạn quay trở lại" : "Điền thông tin để gia nhập XWORLD";
+            document.getElementById("authBtnText").innerText = isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN";
+            document.getElementById("authSwitchPrompt").innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
+            document.getElementById("authSwitchText").innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập ngay";
+            
+            // Ẩn Hiện trường Nhập lại mật khẩu
+            document.getElementById("confirmPassGroup").style.display = isLoginMode ? "none" : "block";
+
+            // Xóa rỗng các ô nhập
+            document.getElementById("authPassword").value = "";
+            document.getElementById("authConfirmPassword").value = "";
+            
+            // Reset lại icon mắt về trạng thái gốc
+            document.querySelectorAll('.toggle-pw').forEach(icon => icon.innerText = "👁️");
+            document.getElementById("authPassword").type = "password";
+            document.getElementById("authConfirmPassword").type = "password";
+        }
+
         async function fetchAPI(payload) {
             let token = localStorage.getItem("xw_token") || "";
-            
-            // 1. Thêm Timestamp chống Replay Attack
             payload.ts = Date.now();
-            
-            // 2. Thêm Device Fingerprint (Bắt chuỗi user-agent)
             payload.device = btoa(navigator.userAgent).slice(0, 40);
-            
-            // 3. Tạo Chữ Ký (Signature) để Server xác nhận Client xịn
             let tokenSnippet = token ? token.slice(0, 10) : "GUEST";
             payload.sig = btoa("XW_SECURE_" + payload.ts + "_" + tokenSnippet);
-            
             if (token) payload.token = token;
 
             try {
                 let res = await fetch(API, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // Lách CORS của Google
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, 
                     body: JSON.stringify(payload)
                 });
                 return await res.json();
@@ -226,7 +266,6 @@
             }
         }
 
-        // HIỂU ỨNG LOADING SPINNER
         function toggleLoading(btnId, spinnerId, textId, isLoading, originalText) {
             let btn = document.getElementById(btnId);
             document.getElementById(spinnerId).style.display = isLoading ? "block" : "none";
@@ -234,14 +273,21 @@
             btn.disabled = isLoading;
         }
 
-        // XỬ LÝ ĐĂNG NHẬP & ĐĂNG KÝ
         async function handleAuth() {
             if (Date.now() - lastClick < 2000) return; 
             lastClick = Date.now();
             
             let u = document.getElementById("authUsername").value.trim();
             let p = document.getElementById("authPassword").value.trim();
+            
             if (!u || !p) return showMsg("⚠️ Nhập đủ thông tin!");
+            if (p.length < 8) return showMsg("⚠️ Mật khẩu phải từ 8 ký tự!");
+
+            // Kiểm tra mật khẩu thứ 2 nếu đang ở chế độ Đăng Ký
+            if (!isLoginMode) {
+                let cp = document.getElementById("authConfirmPassword").value.trim();
+                if (p !== cp) return showMsg("⚠️ Hai mật khẩu không khớp nhau!");
+            }
 
             toggleLoading("btnAuth", "authSpinner", "authBtnText", true, isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN");
 
@@ -249,9 +295,8 @@
             
             if (data.status === "success") {
                 if (!isLoginMode) { 
-                    showMsg("✅ Đăng ký thành công!", "success"); 
-                    isLoginMode = true; 
-                    toggleAuthMode(); 
+                    showMsg("✅ Đăng ký thành công! Hãy đăng nhập.", "success"); 
+                    toggleAuthMode(); // Tự chuyển về form Login
                 } else {
                     localStorage.setItem("xw_token", data.token);
                     currentUserName = u;
@@ -263,7 +308,6 @@
             toggleLoading("btnAuth", "authSpinner", "authBtnText", false, isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN");
         }
 
-        // HIỂN THỊ KHU VỰC LÀM VIỆC SAU KHI LOGIN
         function showWorkspace(user, balance) {
             document.getElementById("authSection").style.display = "none";
             document.getElementById("shopSection").style.display = "block";
@@ -274,7 +318,6 @@
             loadHistory();
         }
 
-        // TẢI DANH SÁCH SẢN PHẨM
         async function loadProducts() {
             let data = await fetchAPI({ action: "products" });
             let select = document.getElementById("productSelect");
@@ -288,7 +331,6 @@
             }
         }
 
-        // TÍNH GIÁ REALTIME (CÓ GIẢM GIÁ)
         function calcPrice() {
             let select = document.getElementById("productSelect");
             if(select.selectedIndex === -1) return;
@@ -315,70 +357,9 @@
             document.getElementById("priceBox").style.display = "block";
         }
 
-        // MUA KEY
         async function buyKey() {
             if (Date.now() - lastClick < 3000) return showMsg("⚠️ Thao tác quá nhanh!"); 
             lastClick = Date.now();
             
             let pid = document.getElementById("productSelect").value || 1;
-            let days = parseInt(document.getElementById("buyDays").value);
-            if (!days || days < 1) days = 1;
-
-            toggleLoading("btnBuy", "buySpinner", "buyBtnText", true, "🛒 XÁC NHẬN THANH TOÁN");
-
-            let data = await fetchAPI({ action: "buy", days: days, product_id: pid });
-
-            if (data.status === "success") {
-                document.getElementById("displayBalance").innerText = Number(data.new_balance).toLocaleString() + " ₫";
-                document.getElementById("modalKeyText").innerText = data.key;
-                document.getElementById("successModal").style.display = "flex";
-                
-                // Tự động copy
-                navigator.clipboard.writeText(data.key);
-                showMsg("✅ Mua thành công! Đã copy Key.", "success");
-                
-                loadHistory();
-            } else if (data.status === "unauthorized") { 
-                showMsg("⚠️ Phiên hết hạn!"); 
-                logout(); 
-            } else { 
-                showMsg("❌ " + data.message); 
-            }
-            
-            toggleLoading("btnBuy", "buySpinner", "buyBtnText", false, "🛒 XÁC NHẬN THANH TOÁN");
-        }
-
-        // TẢI LỊCH SỬ GIAO DỊCH
-        async function loadHistory() {
-            let data = await fetchAPI({ action: "history" });
-            let html = "";
-            if (data.status === "success" && data.data.length > 0) {
-                data.data.forEach(k => {
-                    let isExp = new Date() > new Date(k.expire);
-                    let stat = k.status === 'banned' ? '<span style="color:#ef4444">Bị Khóa</span>' : (isExp ? '<span style="color:#f59e0b">Hết Hạn</span>' : '<span style="color:#10b981">Active</span>');
-                    
-                    html += `<tr>
-                        <td class="key-text" onclick="navigator.clipboard.writeText('${k.key}'); showMsg('Đã copy Key!', 'success');" title="Bấm để Copy">${k.key}</td>
-                        <td style="color:#94a3b8">${k.days} ngày</td>
-                        <td>${stat}</td>
-                    </tr>`;
-                });
-            } else { 
-                html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding: 20px;">Bạn chưa mua Key nào.</td></tr>'; 
-            }
-            document.getElementById("historyTable").innerHTML = html;
-        }
-
-        // CÁC HÀM UI POPUP/MODAL
-        function openDeposit() { document.getElementById("depositModal").style.display = "flex"; }
-        function closeDeposit() { document.getElementById("depositModal").style.display = "none"; }
-        function closeModal() { document.getElementById("successModal").style.display = "none"; }
-        
-        // ĐĂNG XUẤT
-        function logout() { 
-            localStorage.removeItem("xw_token"); 
-            location.reload(); 
-        }
-    </script>
-</body>
-</html>
+            let days = 
