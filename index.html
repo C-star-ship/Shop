@@ -371,4 +371,14 @@
 
         // CÁC HÀM UI POPUP/MODAL
         function openDeposit() { document.getElementById("depositModal").style.display = "flex"; }
-        function closeDeposit() { document.getElementById("depositModal").style.display = "
+        function closeDeposit() { document.getElementById("depositModal").style.display = "none"; }
+        function closeModal() { document.getElementById("successModal").style.display = "none"; }
+        
+        // ĐĂNG XUẤT
+        function logout() { 
+            localStorage.removeItem("xw_token"); 
+            location.reload(); 
+        }
+    </script>
+</body>
+</html>
