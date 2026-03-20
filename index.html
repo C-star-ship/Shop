@@ -7,318 +7,317 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-        body { background: #0b0f19; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { background: #06090f; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         * { box-sizing: border-box; }
 
         /* HEADER */
-        .header { width: 100%; background: #121826; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,255,195,0.1); position: sticky; top: 0; z-index: 100; }
-        .logo { color: #00ffc3; font-size: 24px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,195,0.3); }
+        .header { width: 100%; background: rgba(18, 24, 38, 0.9); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,255,195,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { color: #00ffc3; font-size: 22px; font-weight: 800; letter-spacing: 2px; }
         .user-info { display: none; align-items: center; gap: 15px; }
-        .balance { background: rgba(0,255,195,0.1); color: #00ffc3; padding: 6px 12px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(0,255,195,0.3); }
-        .btn-logout { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .balance { background: rgba(0,255,195,0.1); color: #00ffc3; padding: 8px 15px; border-radius: 8px; font-weight: 800; border: 1px solid rgba(0,255,195,0.3); }
+        .btn-action-sm { background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-action-sm:hover { background: #2563eb; }
+        .btn-logout { background: transparent; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
 
-        /* CONTAINER */
-        .container { width: 100%; max-width: 600px; padding: 30px 20px; }
+        .container { width: 100%; max-width: 500px; padding: 40px 20px; }
+        .card { background: #121826; padding: 35px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-bottom: 25px; }
+        .card h2 { margin-top: 0; color: #00ffc3; text-align: center; font-size: 20px; letter-spacing: 1px; margin-bottom: 25px; }
 
-        /* BOX CHUNG */
-        .card { background: #121826; padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 25px; }
-        .card h2 { margin-top: 0; color: #00ffc3; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; }
-
-        /* FORM INPUT */
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px; font-weight: 600; }
-        input, select { width: 100%; padding: 14px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 8px; font-family: inherit; font-size: 15px; transition: 0.3s; }
-        input:focus, select:focus { border-color: #00ffc3; outline: none; box-shadow: 0 0 0 2px rgba(0,255,195,0.1); }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 10px; color: #94a3b8; font-size: 14px; font-weight: 600; }
+        input, select { width: 100%; padding: 15px; background: #0b0f19; border: 1px solid #334155; color: white; border-radius: 10px; font-family: inherit; font-size: 15px; transition: 0.3s; }
+        input:focus, select:focus { border-color: #00ffc3; outline: none; }
         
-        button { width: 100%; padding: 15px; background: #00ffc3; color: black; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 16px; text-transform: uppercase; transition: 0.2s; }
+        button { width: 100%; padding: 16px; background: #00ffc3; color: black; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 16px; text-transform: uppercase; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; }
         button:hover:not(:disabled) { box-shadow: 0 0 20px rgba(0,255,195,0.4); transform: translateY(-2px); }
-        button:disabled { opacity: 0.6; cursor: wait; transform: none; box-shadow: none; }
+        button:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* AUTH SECTIONS */
-        .auth-toggle { text-align: center; margin-top: 15px; font-size: 14px; color: #94a3b8; cursor: pointer; }
-        .auth-toggle span { color: #00ffc3; font-weight: bold; text-decoration: underline; }
+        /* LOADING SPINNER CSS */
+        .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* HISTORY TABLE */
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        td, th { padding: 12px 10px; border-bottom: 1px solid #334155; text-align: left; font-size: 14px; }
-        th { color: #94a3b8; text-transform: uppercase; background: #0b0f19; }
-        .key-text { color: #38bdf8; font-family: monospace; font-weight: bold; letter-spacing: 1px; }
+        .link-text { text-align: center; margin-top: 20px; font-size: 14px; color: #94a3b8; cursor: pointer; }
+        .link-text span { color: #00ffc3; font-weight: bold; }
 
-        #loadingMsg { text-align: center; color: #00ffc3; font-style: italic; margin-bottom: 20px; font-weight: bold; display: none; }
-        .discount-box { background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; padding: 10px; border-radius: 8px; color: #fbd38d; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+        .price-calc-box { background: rgba(0, 255, 195, 0.05); border: 1px dashed rgba(0, 255, 195, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none; }
+        .price-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: #94a3b8; }
+        .price-total { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); font-weight: bold; font-size: 18px; color: white; }
+
+        .table-wrap { overflow-x: auto; background: #0b0f19; border-radius: 10px; border: 1px solid #334155; }
+        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        td, th { padding: 15px; border-bottom: 1px solid #334155; text-align: left; font-size: 14px; }
+        th { color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        .key-text { color: #00ffc3; font-family: monospace; font-weight: bold; cursor: pointer; }
+        
+        #customMsg { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; font-weight: bold; color: white; z-index: 9999; display: none; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #121826; padding: 30px; border-radius: 16px; text-align: center; width: 90%; max-width: 400px; border: 1px solid #00ffc3; box-shadow: 0 0 40px rgba(0,255,195,0.2); }
+        .modal-key { background: #0b0f19; padding: 15px; font-family: monospace; font-size: 20px; color: #00ffc3; border-radius: 8px; margin: 20px 0; border: 1px dashed #334155; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
+    <div id="customMsg">Thông báo</div>
+
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <h2 style="color: #00ffc3; margin-top: 0;">🎉 GIAO DỊCH THÀNH CÔNG!</h2>
+            <p style="color: #94a3b8; font-size: 14px;">Mã Key của bạn đã được copy vào khay nhớ tạm:</p>
+            <div class="modal-key" id="modalKeyText">XW-XXXX-XXXX</div>
+            <button style="background: #334155; color: white;" onclick="closeModal()">ĐÓNG LẠI</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="depositModal">
+        <div class="modal-content" style="border-color: #3b82f6; box-shadow: 0 0 40px rgba(59,130,246,0.2);">
+            <h2 style="color: #3b82f6; margin-top: 0;">💳 NẠP TIỀN AUTO</h2>
+            <p style="color: #94a3b8; font-size: 14px;">Chuyển khoản theo cú pháp bên dưới. Tiền sẽ vào tài khoản sau 30s - 1 phút.</p>
+            <div style="background: #0b0f19; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px dashed #334155; text-align: left; font-size: 15px; line-height: 1.6;">
+                Ngân hàng: <strong>MB BANK</strong><br>
+                STK: <strong style="color: white; font-size: 18px;">0123456789</strong><br>
+                Tên: <strong>NGUYEN VAN A</strong><br>
+                Nội dung: <strong style="color: #00ffc3; font-size: 18px;" id="depositSyntax">NAP XW</strong>
+            </div>
+            <button style="background: #334155; color: white;" onclick="closeDeposit()">ĐÃ HIỂU</button>
+        </div>
+    </div>
+
     <div class="header">
         <div class="logo">XWORLD</div>
         <div class="user-info" id="userInfo">
+            <button class="btn-action-sm" onclick="openDeposit()">NẠP TIỀN</button>
             <div class="balance" id="displayBalance">0 ₫</div>
-            <button class="btn-logout" onclick="logout()">Thoát</button>
+            <button class="btn-logout" onclick="logout()">THOÁT</button>
         </div>
     </div>
 
     <div class="container">
-        <div id="loadingMsg">⏳ Đang xử lý...</div>
-
         <div id="authSection" class="card">
-            <h2 id="authTitle">Đăng Nhập Hệ Thống</h2>
-            
+            <h2 id="authTitle">ĐĂNG NHẬP HỆ THỐNG</h2>
             <div class="input-group">
                 <label>Tài khoản</label>
-                <input type="text" id="authUsername" placeholder="Nhập tài khoản (viết liền không dấu)" autocomplete="off">
+                <input type="text" id="authUsername" placeholder="ID của bạn" autocomplete="off">
             </div>
             <div class="input-group">
                 <label>Mật khẩu</label>
                 <input type="password" id="authPassword" placeholder="••••••••">
             </div>
-            
-            <button id="btnAuth" onclick="handleAuth()">Đăng Nhập Ngay</button>
-            <div class="auth-toggle" onclick="toggleAuthMode()">
-                Chưa có tài khoản? <span id="authSwitchText">Đăng ký ngay</span>
-            </div>
+            <button id="btnAuth" onclick="handleAuth()">
+                <span class="spinner" id="authSpinner"></span>
+                <span id="authBtnText">ĐĂNG NHẬP</span>
+            </button>
+            <div class="link-text" onclick="toggleAuthMode()">Chưa có tài khoản? <span id="authSwitchText">Đăng ký ngay</span></div>
         </div>
 
         <div id="shopSection" style="display: none;">
-            
-            <div class="card" style="border-color: #3b82f6;">
-                <h2 style="color: #3b82f6;">NẠP TIỀN VÀO TÀI KHOẢN</h2>
-                <div style="text-align: center; line-height: 1.6;">
-                    Ngân hàng: <strong>MB BANK</strong><br>
-                    STK: <strong style="color: white; font-size: 18px;">123456789</strong><br>
-                    Tên: <strong>NGUYEN VAN A</strong><br>
-                    Nội dung CK: <strong style="color: #00ffc3; font-size: 18px; background: #0b0f19; padding: 4px 8px; border-radius: 4px;">NAP <span id="napSyntax"></span></strong>
-                </div>
-                <div style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 10px;">
-                    * Hệ thống cộng tiền tự động sau 1-3 phút.
-                </div>
-            </div>
-
             <div class="card">
-                <h2>MUA KEY GOLIKE PRO</h2>
-                
-                <div class="discount-box">
-                    🔥 <strong>ƯU ĐÃI ĐẶC BIỆT:</strong><br>
-                    - Mua > 7 ngày: Giảm 15%<br>
-                    - Mua > 20 ngày: Giảm 20%<br>
-                    - Mua > 30 ngày: Giảm 25%
-                </div>
-
+                <h2>MUA KEY GOLIKE</h2>
                 <div class="input-group">
-                    <label>Chọn sản phẩm</label>
-                    <select id="productSelect">
-                        <option value="1">Đang tải sản phẩm...</option>
+                    <label>Sản phẩm</label>
+                    <select id="productSelect" onchange="calcPrice()">
+                        <option value="" data-price="0">Đang tải...</option>
                     </select>
                 </div>
-
                 <div class="input-group">
-                    <label>Số ngày muốn mua</label>
-                    <input type="number" id="buyDays" placeholder="VD: 30" min="1" value="1">
+                    <label>Số ngày mua</label>
+                    <input type="number" id="buyDays" placeholder="VD: 30" min="1" value="1" oninput="calcPrice()">
                 </div>
-
-                <button id="btnBuy" onclick="buyKey()">🛒 XÁC NHẬN MUA</button>
+                <div class="price-calc-box" id="priceBox">
+                    <div class="price-row"><span>Đơn giá:</span><span id="calcBase">0 ₫/ngày</span></div>
+                    <div class="price-row"><span>Ưu đãi:</span><span style="color: #10b981; font-weight: bold;" id="calcDiscount">0%</span></div>
+                    <div class="price-total"><span>Thành tiền:</span><span style="color: #00ffc3;" id="calcTotal">0 ₫</span></div>
+                </div>
+                <button id="btnBuy" onclick="buyKey()">
+                    <span class="spinner" id="buySpinner"></span>
+                    <span id="buyBtnText">🛒 XÁC NHẬN THANH TOÁN</span>
+                </button>
             </div>
 
             <div class="card">
-                <h2>LỊCH SỬ KEY CỦA BẠN</h2>
+                <h2>LỊCH SỬ KEY</h2>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Mã Key VIP</th><th>Thời hạn</th><th>Trạng thái</th></tr></thead>
-                        <tbody id="historyTable">
-                            <tr><td colspan="3" style="text-align:center;">Chưa có dữ liệu</td></tr>
-                        </tbody>
+                        <thead><tr><th>MÃ KEY</th><th>HẠN DÙNG</th><th>TRẠNG THÁI</th></tr></thead>
+                        <tbody id="historyTable"><tr><td colspan="3" style="text-align:center; color: #94a3b8;">Đang tải...</td></tr></tbody>
                     </table>
                 </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="check.html" style="color: #00ffc3; text-decoration: none; font-weight: bold; font-size: 14px;">🔍 Tra cứu chi tiết Key</a>
-                </div>
             </div>
-            
         </div>
     </div>
 
     <script>
-        // ⚠️ DÁN LINK API CỦA BẠN VÀO ĐÂY:
-        const API = "https://script.google.com/macros/s/AKfycbwfkuS1PDbKnpxX9NOsGw3n8aIoLr_eNRHTUhPSMWGpu56xcMtMrq3ZszO6ssHP5zRH8Q/exec";
+        // ⚠️ THAY LINK API VÀO ĐÂY
+        const API = "https://script.google.com/macros/s/AKfycbxuSGVqxmFI5bt7N4A0Ru3MPxHx3eZY64OHLYImNJ1OpVu5qHH8gmM2KZspklT-Rsnfzw/exec";
 
-        let currentUser = localStorage.getItem("xw_user") || "";
-        let currentPass = localStorage.getItem("xw_pass") || "";
         let isLoginMode = true;
+        let lastClick = 0; 
+        let currentUserName = "";
 
-        window.onload = () => {
-            if (currentUser && currentPass) {
-                // Nếu đã lưu tài khoản thì tự động đăng nhập ngầm
-                login(currentUser, currentPass);
+        window.onload = async () => { 
+            let token = localStorage.getItem("xw_token");
+            if (token) {
+                let data = await fetchAPI({ action: "me" });
+                if (data.status === "success") {
+                    currentUserName = data.user;
+                    showWorkspace(data.user, data.balance);
+                } else { logout(); }
             }
         };
 
-        // ==========================================
-        // 1. CHUYỂN ĐỔI ĐĂNG NHẬP / ĐĂNG KÝ
-        // ==========================================
+        function showMsg(text, type = "error") {
+            let box = document.getElementById("customMsg");
+            box.innerText = text; box.style.background = type === "success" ? "#10b981" : "#ef4444";
+            box.style.display = "block"; setTimeout(() => { box.style.display = "none"; }, 3000);
+        }
+
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
-            document.getElementById("authTitle").innerText = isLoginMode ? "Đăng Nhập Hệ Thống" : "Tạo Tài Khoản Mới";
-            document.getElementById("btnAuth").innerText = isLoginMode ? "Đăng Nhập Ngay" : "Đăng Ký Tài Khoản";
+            document.getElementById("authTitle").innerText = isLoginMode ? "ĐĂNG NHẬP" : "ĐĂNG KÝ MỚI";
+            document.getElementById("authBtnText").innerText = isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN";
             document.getElementById("authSwitchText").innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập ngay";
         }
 
+        // ==============================================================
+        // BẢO MẬT TỐI THƯỢNG: KÝ REQUEST CHỐNG TOOL & REPLAY
+        // ==============================================================
+        async function fetchAPI(payload) {
+            let token = localStorage.getItem("xw_token") || "";
+            
+            // 1. Thêm Timestamp chống Replay Attack (Chặn gửi lại request cũ)
+            payload.ts = Date.now();
+            
+            // 2. Thêm Device Fingerprint (Khóa thiết bị)
+            payload.device = btoa(navigator.userAgent).slice(0, 40);
+            
+            // 3. Tạo Chữ Ký (Signature) để Server xác nhận Client xịn
+            // Thuật toán: Base64( "XW_SECURE_" + timestamp + 10 ký tự đầu của Token )
+            let tokenSnippet = token ? token.slice(0, 10) : "GUEST";
+            payload.sig = btoa("XW_SECURE_" + payload.ts + "_" + tokenSnippet);
+            
+            if (token) payload.token = token;
+
+            try {
+                let res = await fetch(API, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // Lách CORS của GAS
+                    body: JSON.stringify(payload)
+                });
+                return await res.json();
+            } catch (e) {
+                return { status: "error", message: "Lỗi kết nối tới Server!" };
+            }
+        }
+
+        function toggleLoading(btnId, spinnerId, textId, isLoading, originalText) {
+            let btn = document.getElementById(btnId);
+            document.getElementById(spinnerId).style.display = isLoading ? "block" : "none";
+            document.getElementById(textId).innerText = isLoading ? "ĐANG XỬ LÝ..." : originalText;
+            btn.disabled = isLoading;
+        }
+
         async function handleAuth() {
+            if (Date.now() - lastClick < 2000) return; lastClick = Date.now();
             let u = document.getElementById("authUsername").value.trim();
             let p = document.getElementById("authPassword").value.trim();
+            if (!u || !p) return showMsg("⚠️ Nhập đủ thông tin!");
 
-            if (!u || !p) return alert("⚠️ Vui lòng điền đủ Tài khoản và Mật khẩu!");
-            if (p.length < 8) return alert("⚠️ Mật khẩu phải từ 8 ký tự trở lên!");
+            toggleLoading("btnAuth", "authSpinner", "authBtnText", true, isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN");
+
+            let data = await fetchAPI({ action: isLoginMode ? "login" : "register", user: u, pass: p });
             
-            let btn = document.getElementById("btnAuth");
-            btn.disabled = true; btn.innerText = "Đang xử lý...";
-
-            try {
-                let action = isLoginMode ? "login" : "register";
-                let res = await fetch(`${API}?action=${action}&user=${u}&pass=${p}`);
-                let data = await res.json();
-
-                if (data.status === "success") {
-                    if (!isLoginMode) {
-                        alert("✅ Đăng ký thành công! Đang tự động đăng nhập...");
-                        isLoginMode = true;
-                    }
-                    login(u, p); // Gọi hàm đăng nhập
+            if (data.status === "success") {
+                if (!isLoginMode) { 
+                    showMsg("✅ Đăng ký thành công!", "success"); 
+                    isLoginMode = true; toggleAuthMode(); 
                 } else {
-                    alert("❌ Lỗi: " + data.message);
-                    btn.disabled = false; btn.innerText = isLoginMode ? "Đăng Nhập Ngay" : "Đăng Ký Tài Khoản";
+                    localStorage.setItem("xw_token", data.token);
+                    currentUserName = u;
+                    showWorkspace(u, data.balance);
                 }
-            } catch (e) {
-                alert("❌ Lỗi kết nối đến máy chủ!");
-                btn.disabled = false; btn.innerText = isLoginMode ? "Đăng Nhập Ngay" : "Đăng Ký Tài Khoản";
+            } else {
+                showMsg("❌ " + data.message);
             }
+            toggleLoading("btnAuth", "authSpinner", "authBtnText", false, isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN");
         }
 
-        async function login(u, p) {
-            document.getElementById("loadingMsg").style.display = "block";
-            try {
-                let res = await fetch(`${API}?action=login&user=${u}&pass=${p}`);
-                let data = await res.json();
-                
-                document.getElementById("loadingMsg").style.display = "none";
-
-                if (data.status === "success") {
-                    // Lưu cấu hình
-                    currentUser = u; currentPass = p;
-                    localStorage.setItem("xw_user", u);
-                    localStorage.setItem("xw_pass", p);
-
-                    // Đổi Giao diện
-                    document.getElementById("authSection").style.display = "none";
-                    document.getElementById("shopSection").style.display = "block";
-                    document.getElementById("userInfo").style.display = "flex";
-                    
-                    // Cập nhật thông tin
-                    document.getElementById("displayBalance").innerText = Number(data.balance).toLocaleString() + " ₫";
-                    document.getElementById("napSyntax").innerText = u.toUpperCase();
-
-                    // Tải dữ liệu Shop
-                    loadProducts();
-                    loadHistory();
-                } else {
-                    alert("⚠️ Phiên đăng nhập hết hạn hoặc sai mật khẩu!");
-                    logout();
-                }
-            } catch (e) {
-                document.getElementById("loadingMsg").style.display = "none";
-                alert("❌ Lỗi mạng: Không thể đăng nhập.");
-            }
+        function showWorkspace(user, balance) {
+            document.getElementById("authSection").style.display = "none";
+            document.getElementById("shopSection").style.display = "block";
+            document.getElementById("userInfo").style.display = "flex";
+            document.getElementById("displayBalance").innerText = Number(balance).toLocaleString() + " ₫";
+            document.getElementById("depositSyntax").innerText = "NAP " + user.toUpperCase();
+            loadProducts(); loadHistory();
         }
 
-        // ==========================================
-        // 2. SHOP & MUA KEY
-        // ==========================================
         async function loadProducts() {
-            try {
-                let res = await fetch(`${API}?action=products`);
-                let data = await res.json();
-                if (data.status === "success" && data.data.length > 0) {
-                    let html = "";
-                    data.data.forEach(p => {
-                        html += `<option value="${p.id}">${p.name} - ${Number(p.price).toLocaleString()} ₫/ngày</option>`;
-                    });
-                    document.getElementById("productSelect").innerHTML = html;
-                } else {
-                    document.getElementById("productSelect").innerHTML = '<option value="">Tạm hết hàng</option>';
-                }
-            } catch(e) {}
+            let data = await fetchAPI({ action: "products" });
+            let select = document.getElementById("productSelect");
+            if (data.status === "success" && data.data.length > 0) {
+                let html = ""; data.data.forEach(p => { html += `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`; });
+                select.innerHTML = html; calcPrice();
+            } else { select.innerHTML = '<option value="1">Tool Auto Golike Pro (Server ẩn)</option>'; }
+        }
+
+        function calcPrice() {
+            let select = document.getElementById("productSelect");
+            if(select.selectedIndex === -1) return;
+            let pricePerDay = Number(select.options[select.selectedIndex].getAttribute("data-price"));
+            let days = parseInt(document.getElementById("buyDays").value);
+            if (!days || days < 1) { days = 1; document.getElementById("buyDays").value = 1; }
+
+            let basePrice = pricePerDay * days; let discount = 0;
+            if (days > 30) discount = 25; else if (days > 20) discount = 20; else if (days > 7) discount = 15;
+            let finalPrice = Math.round(basePrice * (1 - discount / 100));
+
+            document.getElementById("calcBase").innerText = pricePerDay.toLocaleString() + " ₫/ngày";
+            document.getElementById("calcDiscount").innerText = discount > 0 ? `- ${discount}%` : "0%";
+            document.getElementById("calcTotal").innerText = finalPrice.toLocaleString() + " ₫";
+            document.getElementById("priceBox").style.display = "block";
         }
 
         async function buyKey() {
-            let pid = document.getElementById("productSelect").value;
-            let daysInput = document.getElementById("buyDays").value.trim();
+            if (Date.now() - lastClick < 3000) return showMsg("⚠️ Thao tác quá nhanh!"); lastClick = Date.now();
+            let pid = document.getElementById("productSelect").value || 1;
+            let days = parseInt(document.getElementById("buyDays").value);
+            if (!days || days < 1) days = 1;
+
+            toggleLoading("btnBuy", "buySpinner", "buyBtnText", true, "🛒 XÁC NHẬN THANH TOÁN");
+
+            let data = await fetchAPI({ action: "buy", days: days, product_id: pid });
+
+            if (data.status === "success") {
+                document.getElementById("displayBalance").innerText = Number(data.new_balance).toLocaleString() + " ₫";
+                document.getElementById("modalKeyText").innerText = data.key;
+                document.getElementById("successModal").style.display = "flex";
+                navigator.clipboard.writeText(data.key);
+                showMsg("✅ Mua thành công! Đã copy Key.", "success");
+                loadHistory();
+            } else if (data.status === "unauthorized") { showMsg("⚠️ Phiên hết hạn!"); logout(); } 
+            else { showMsg("❌ " + data.message); }
             
-            // XỬ LÝ MẶC ĐỊNH SỐ NGÀY: Chống lỗi khách nhập tào lao
-            let days = parseInt(daysInput);
-            if (isNaN(days) || days <= 0) {
-                days = 1; // Mặc định tự gán bằng 1
-                document.getElementById("buyDays").value = 1; 
-            }
-
-            if (!pid) return alert("⚠️ Cửa hàng đang cập nhật sản phẩm!");
-            if (!confirm(`Xác nhận mua Key cho ${days} ngày? Hệ thống sẽ trừ tiền trong tài khoản của bạn.`)) return;
-
-            let btn = document.getElementById("btnBuy");
-            btn.disabled = true; btn.innerText = "⏳ Đang tạo Key...";
-
-            try {
-                let res = await fetch(`${API}?action=buy&user=${currentUser}&pass=${currentPass}&days=${days}&product_id=${pid}`);
-                let data = await res.json();
-
-                if (data.status === "success") {
-                    alert(`✅ MUA THÀNH CÔNG!\n\nMã Key của bạn là:\n${data.key}\n\nHãy copy mã này dán vào Tool để sử dụng.`);
-                    document.getElementById("displayBalance").innerText = Number(data.new_balance).toLocaleString() + " ₫";
-                    loadHistory(); // Load lại bảng lịch sử cho khách thấy key mới
-                } else {
-                    alert("❌ Lỗi: " + data.message);
-                }
-            } catch (e) {
-                alert("❌ Lỗi mạng: Không thể giao dịch.");
-            }
-
-            btn.disabled = false; btn.innerText = "🛒 XÁC NHẬN MUA";
+            toggleLoading("btnBuy", "buySpinner", "buyBtnText", false, "🛒 XÁC NHẬN THANH TOÁN");
         }
 
-        // ==========================================
-        // 3. LỊCH SỬ MUA HÀNG
-        // ==========================================
         async function loadHistory() {
-            try {
-                let res = await fetch(`${API}?action=history&user=${currentUser}`);
-                let data = await res.json();
-                let html = "";
-                
-                if (data.status === "success" && data.data.length > 0) {
-                    data.data.forEach(k => {
-                        let isExpired = new Date() > new Date(k.expire);
-                        let statusText = k.status === 'banned' ? '<span style="color:#ef4444">Bị Khóa</span>' : (isExpired ? '<span style="color:#f59e0b">Hết Hạn</span>' : '<span style="color:#10b981">Hoạt Động</span>');
-                        
-                        html += `<tr>
-                            <td class="key-text">${k.key}</td>
-                            <td style="color:#94a3b8">${k.days} ngày</td>
-                            <td>${statusText}</td>
-                        </tr>`;
-                    });
-                } else {
-                    html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">Bạn chưa mua Key nào.</td></tr>';
-                }
-                document.getElementById("historyTable").innerHTML = html;
-            } catch (e) {}
+            let data = await fetchAPI({ action: "history" });
+            let html = "";
+            if (data.status === "success" && data.data.length > 0) {
+                data.data.forEach(k => {
+                    let isExp = new Date() > new Date(k.expire);
+                    let stat = k.status === 'banned' ? '<span style="color:#ef4444">Bị Khóa</span>' : (isExp ? '<span style="color:#f59e0b">Hết Hạn</span>' : '<span style="color:#10b981">Active</span>');
+                    html += `<tr><td class="key-text" onclick="navigator.clipboard.writeText('${k.key}'); showMsg('Đã copy Key!', 'success');" title="Bấm để Copy">${k.key}</td><td style="color:#94a3b8">${k.days} ngày</td><td>${stat}</td></tr>`;
+                });
+            } else { html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding: 20px;">Trống.</td></tr>'; }
+            document.getElementById("historyTable").innerHTML = html;
         }
 
-        // ==========================================
-        // THOÁT
-        // ==========================================
-        function logout() {
-            localStorage.removeItem("xw_user");
-            localStorage.removeItem("xw_pass");
-            location.reload();
-        }
+        function openDeposit() { document.getElementById("depositModal").style.display = "flex"; }
+        function closeDeposit() { document.getElementById("depositModal").style.display = "none"; }
+        function closeModal() { document.getElementById("successModal").style.display = "none"; }
+        function logout() { localStorage.removeItem("xw_token"); location.reload(); }
     </script>
 </body>
 </html>
