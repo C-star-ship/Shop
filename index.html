@@ -95,6 +95,7 @@
     </div>
 
     <div class="container">
+        
         <div id="authSection" class="card">
             <h2 id="authTitle">ĐĂNG NHẬP HỆ THỐNG</h2>
             <div class="input-group">
@@ -113,23 +114,28 @@
         </div>
 
         <div id="shopSection" style="display: none;">
+            
             <div class="card">
                 <h2>MUA KEY GOLIKE</h2>
+                
                 <div class="input-group">
                     <label>Sản phẩm</label>
                     <select id="productSelect" onchange="calcPrice()">
                         <option value="" data-price="0">Đang tải...</option>
                     </select>
                 </div>
+
                 <div class="input-group">
                     <label>Số ngày mua</label>
                     <input type="number" id="buyDays" placeholder="VD: 30" min="1" value="1" oninput="calcPrice()">
                 </div>
+
                 <div class="price-calc-box" id="priceBox">
                     <div class="price-row"><span>Đơn giá:</span><span id="calcBase">0 ₫/ngày</span></div>
                     <div class="price-row"><span>Ưu đãi:</span><span style="color: #10b981; font-weight: bold;" id="calcDiscount">0%</span></div>
                     <div class="price-total"><span>Thành tiền:</span><span style="color: #00ffc3;" id="calcTotal">0 ₫</span></div>
                 </div>
+
                 <button id="btnBuy" onclick="buyKey()">
                     <span class="spinner" id="buySpinner"></span>
                     <span id="buyBtnText">🛒 XÁC NHẬN THANH TOÁN</span>
@@ -141,21 +147,25 @@
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>MÃ KEY</th><th>HẠN DÙNG</th><th>TRẠNG THÁI</th></tr></thead>
-                        <tbody id="historyTable"><tr><td colspan="3" style="text-align:center; color: #94a3b8;">Đang tải...</td></tr></tbody>
+                        <tbody id="historyTable">
+                            <tr><td colspan="3" style="text-align:center; color: #94a3b8;">Đang tải...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        // ⚠️ THAY LINK API VÀO ĐÂY
+        // ⚠️ THAY LINK API VÀO ĐÂY:
         const API = "https://script.google.com/macros/s/AKfycbxuSGVqxmFI5bt7N4A0Ru3MPxHx3eZY64OHLYImNJ1OpVu5qHH8gmM2KZspklT-Rsnfzw/exec";
 
         let isLoginMode = true;
         let lastClick = 0; 
         let currentUserName = "";
 
+        // AUTO LOGIN KIỂM TRA TOKEN
         window.onload = async () => { 
             let token = localStorage.getItem("xw_token");
             if (token) {
@@ -163,16 +173,22 @@
                 if (data.status === "success") {
                     currentUserName = data.user;
                     showWorkspace(data.user, data.balance);
-                } else { logout(); }
+                } else { 
+                    logout(); 
+                }
             }
         };
 
+        // HÀM HIỂN THỊ THÔNG BÁO XỊN
         function showMsg(text, type = "error") {
             let box = document.getElementById("customMsg");
-            box.innerText = text; box.style.background = type === "success" ? "#10b981" : "#ef4444";
-            box.style.display = "block"; setTimeout(() => { box.style.display = "none"; }, 3000);
+            box.innerText = text; 
+            box.style.background = type === "success" ? "#10b981" : "#ef4444";
+            box.style.display = "block"; 
+            setTimeout(() => { box.style.display = "none"; }, 3000);
         }
 
+        // HÀM ĐỔI CHẾ ĐỘ ĐĂNG NHẬP / ĐĂNG KÝ
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             document.getElementById("authTitle").innerText = isLoginMode ? "ĐĂNG NHẬP" : "ĐĂNG KÝ MỚI";
@@ -186,14 +202,13 @@
         async function fetchAPI(payload) {
             let token = localStorage.getItem("xw_token") || "";
             
-            // 1. Thêm Timestamp chống Replay Attack (Chặn gửi lại request cũ)
+            // 1. Thêm Timestamp chống Replay Attack
             payload.ts = Date.now();
             
-            // 2. Thêm Device Fingerprint (Khóa thiết bị)
+            // 2. Thêm Device Fingerprint (Bắt chuỗi user-agent)
             payload.device = btoa(navigator.userAgent).slice(0, 40);
             
             // 3. Tạo Chữ Ký (Signature) để Server xác nhận Client xịn
-            // Thuật toán: Base64( "XW_SECURE_" + timestamp + 10 ký tự đầu của Token )
             let tokenSnippet = token ? token.slice(0, 10) : "GUEST";
             payload.sig = btoa("XW_SECURE_" + payload.ts + "_" + tokenSnippet);
             
@@ -202,7 +217,7 @@
             try {
                 let res = await fetch(API, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // Lách CORS của GAS
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // Lách CORS của Google
                     body: JSON.stringify(payload)
                 });
                 return await res.json();
@@ -211,6 +226,7 @@
             }
         }
 
+        // HIỂU ỨNG LOADING SPINNER
         function toggleLoading(btnId, spinnerId, textId, isLoading, originalText) {
             let btn = document.getElementById(btnId);
             document.getElementById(spinnerId).style.display = isLoading ? "block" : "none";
@@ -218,8 +234,11 @@
             btn.disabled = isLoading;
         }
 
+        // XỬ LÝ ĐĂNG NHẬP & ĐĂNG KÝ
         async function handleAuth() {
-            if (Date.now() - lastClick < 2000) return; lastClick = Date.now();
+            if (Date.now() - lastClick < 2000) return; 
+            lastClick = Date.now();
+            
             let u = document.getElementById("authUsername").value.trim();
             let p = document.getElementById("authPassword").value.trim();
             if (!u || !p) return showMsg("⚠️ Nhập đủ thông tin!");
@@ -231,7 +250,8 @@
             if (data.status === "success") {
                 if (!isLoginMode) { 
                     showMsg("✅ Đăng ký thành công!", "success"); 
-                    isLoginMode = true; toggleAuthMode(); 
+                    isLoginMode = true; 
+                    toggleAuthMode(); 
                 } else {
                     localStorage.setItem("xw_token", data.token);
                     currentUserName = u;
@@ -243,33 +263,50 @@
             toggleLoading("btnAuth", "authSpinner", "authBtnText", false, isLoginMode ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN");
         }
 
+        // HIỂN THỊ KHU VỰC LÀM VIỆC SAU KHI LOGIN
         function showWorkspace(user, balance) {
             document.getElementById("authSection").style.display = "none";
             document.getElementById("shopSection").style.display = "block";
             document.getElementById("userInfo").style.display = "flex";
             document.getElementById("displayBalance").innerText = Number(balance).toLocaleString() + " ₫";
             document.getElementById("depositSyntax").innerText = "NAP " + user.toUpperCase();
-            loadProducts(); loadHistory();
+            loadProducts(); 
+            loadHistory();
         }
 
+        // TẢI DANH SÁCH SẢN PHẨM
         async function loadProducts() {
             let data = await fetchAPI({ action: "products" });
             let select = document.getElementById("productSelect");
             if (data.status === "success" && data.data.length > 0) {
-                let html = ""; data.data.forEach(p => { html += `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`; });
-                select.innerHTML = html; calcPrice();
-            } else { select.innerHTML = '<option value="1">Tool Auto Golike Pro (Server ẩn)</option>'; }
+                let html = ""; 
+                data.data.forEach(p => { html += `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`; });
+                select.innerHTML = html; 
+                calcPrice();
+            } else { 
+                select.innerHTML = '<option value="1">Tool Auto Golike Pro (Server ẩn)</option>'; 
+            }
         }
 
+        // TÍNH GIÁ REALTIME (CÓ GIẢM GIÁ)
         function calcPrice() {
             let select = document.getElementById("productSelect");
             if(select.selectedIndex === -1) return;
+            
             let pricePerDay = Number(select.options[select.selectedIndex].getAttribute("data-price"));
             let days = parseInt(document.getElementById("buyDays").value);
-            if (!days || days < 1) { days = 1; document.getElementById("buyDays").value = 1; }
+            
+            if (!days || days < 1) { 
+                days = 1; 
+                document.getElementById("buyDays").value = 1; 
+            }
 
-            let basePrice = pricePerDay * days; let discount = 0;
-            if (days > 30) discount = 25; else if (days > 20) discount = 20; else if (days > 7) discount = 15;
+            let basePrice = pricePerDay * days; 
+            let discount = 0;
+            if (days > 30) discount = 25; 
+            else if (days > 20) discount = 20; 
+            else if (days > 7) discount = 15;
+            
             let finalPrice = Math.round(basePrice * (1 - discount / 100));
 
             document.getElementById("calcBase").innerText = pricePerDay.toLocaleString() + " ₫/ngày";
@@ -278,8 +315,11 @@
             document.getElementById("priceBox").style.display = "block";
         }
 
+        // MUA KEY
         async function buyKey() {
-            if (Date.now() - lastClick < 3000) return showMsg("⚠️ Thao tác quá nhanh!"); lastClick = Date.now();
+            if (Date.now() - lastClick < 3000) return showMsg("⚠️ Thao tác quá nhanh!"); 
+            lastClick = Date.now();
+            
             let pid = document.getElementById("productSelect").value || 1;
             let days = parseInt(document.getElementById("buyDays").value);
             if (!days || days < 1) days = 1;
@@ -292,15 +332,23 @@
                 document.getElementById("displayBalance").innerText = Number(data.new_balance).toLocaleString() + " ₫";
                 document.getElementById("modalKeyText").innerText = data.key;
                 document.getElementById("successModal").style.display = "flex";
+                
+                // Tự động copy
                 navigator.clipboard.writeText(data.key);
                 showMsg("✅ Mua thành công! Đã copy Key.", "success");
+                
                 loadHistory();
-            } else if (data.status === "unauthorized") { showMsg("⚠️ Phiên hết hạn!"); logout(); } 
-            else { showMsg("❌ " + data.message); }
+            } else if (data.status === "unauthorized") { 
+                showMsg("⚠️ Phiên hết hạn!"); 
+                logout(); 
+            } else { 
+                showMsg("❌ " + data.message); 
+            }
             
             toggleLoading("btnBuy", "buySpinner", "buyBtnText", false, "🛒 XÁC NHẬN THANH TOÁN");
         }
 
+        // TẢI LỊCH SỬ GIAO DỊCH
         async function loadHistory() {
             let data = await fetchAPI({ action: "history" });
             let html = "";
@@ -308,16 +356,19 @@
                 data.data.forEach(k => {
                     let isExp = new Date() > new Date(k.expire);
                     let stat = k.status === 'banned' ? '<span style="color:#ef4444">Bị Khóa</span>' : (isExp ? '<span style="color:#f59e0b">Hết Hạn</span>' : '<span style="color:#10b981">Active</span>');
-                    html += `<tr><td class="key-text" onclick="navigator.clipboard.writeText('${k.key}'); showMsg('Đã copy Key!', 'success');" title="Bấm để Copy">${k.key}</td><td style="color:#94a3b8">${k.days} ngày</td><td>${stat}</td></tr>`;
+                    
+                    html += `<tr>
+                        <td class="key-text" onclick="navigator.clipboard.writeText('${k.key}'); showMsg('Đã copy Key!', 'success');" title="Bấm để Copy">${k.key}</td>
+                        <td style="color:#94a3b8">${k.days} ngày</td>
+                        <td>${stat}</td>
+                    </tr>`;
                 });
-            } else { html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding: 20px;">Trống.</td></tr>'; }
+            } else { 
+                html = '<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding: 20px;">Bạn chưa mua Key nào.</td></tr>'; 
+            }
             document.getElementById("historyTable").innerHTML = html;
         }
 
+        // CÁC HÀM UI POPUP/MODAL
         function openDeposit() { document.getElementById("depositModal").style.display = "flex"; }
-        function closeDeposit() { document.getElementById("depositModal").style.display = "none"; }
-        function closeModal() { document.getElementById("successModal").style.display = "none"; }
-        function logout() { localStorage.removeItem("xw_token"); location.reload(); }
-    </script>
-</body>
-</html>
+        function closeDeposit() { document.getElementById("depositModal").style.display = "
